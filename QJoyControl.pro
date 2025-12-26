@@ -86,6 +86,9 @@ macx {
     # include system event services Mac
     LIBS += -framework ApplicationServices
     SOURCES += mac/eventhandler_macos.cpp
+
+    # ad-hoc code signing after build to preserve accessibility permissions
+    QMAKE_POST_LINK += codesign --force --deep --sign - $$OUT_PWD/$${TARGET}.app
 }
 
 unix:!macx {

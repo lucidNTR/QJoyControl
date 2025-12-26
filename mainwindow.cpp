@@ -54,8 +54,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->inputMapL->addMapper(new InputMapWidget("Capture", L_BUT_CAP | 256, Qt::Key_Escape, _event_handler));
     ui->inputMapL->addMapper(new InputMapWidget("L Stick Click", L_BUT_STICK | 256, Qt::Key_Enter, _event_handler));
     ui->inputMapR->setName("Right");
-    ui->inputMapR->addMapper(new InputMapWidget("X", R_BUT_X, Qt::Key_Up, _event_handler));
-    ui->inputMapR->addMapper(new InputMapWidget("Y", R_BUT_Y, Qt::Key_Left, _event_handler));
+    _x_mapper = ui->inputMapR->addMapper(new InputMapWidget("X", R_BUT_X, Qt::Key_Up, _event_handler));
+    _y_mapper = ui->inputMapR->addMapper(new InputMapWidget("Y", R_BUT_Y, Qt::Key_Left, _event_handler));
     ui->inputMapR->addMapper(new InputMapWidget("A",R_BUT_A, Qt::Key_Right, _event_handler));
     ui->inputMapR->addMapper(new InputMapWidget("B",R_BUT_B, Qt::Key_Down, _event_handler));
     _r_mapper = ui->inputMapR->addMapper(new InputMapWidget("R", R_BUT_R, Qt::Key_A, _event_handler));
@@ -359,6 +359,9 @@ void MainWindow::loadSettings(){
     if(settings.contains("gyro-dead-zone")) {
         ui->doubleSpinBoxGyroDeadzone->setValue(settings.value("gyro-dead-zone").toDouble());
     }
+    if(settings.contains("gyro-acceleration")) {
+        ui->horizontalSliderGyroAccel->setValue(settings.value("gyro-acceleration").toInt());
+    }
     if(settings.contains("last-connection")) {
         QString last_sn = settings.value("last-connection").toString();
         if(settings.contains("auto-connect")){
@@ -407,6 +410,7 @@ void MainWindow::saveSettings()
     settings.setValue("right-click", ui->checkBoxRightClick->isChecked());
     settings.setValue("gyro-mouse", ui->checkBoxGyroMouse->isChecked());
     settings.setValue("gyro-dead-zone", ui->doubleSpinBoxGyroDeadzone->value());
+    settings.setValue("gyro-acceleration", ui->horizontalSliderGyroAccel->value());
 
     if(!_joycon_sn.isEmpty()) {
         settings.setValue("last-connection", _joycon_sn);
@@ -567,23 +571,51 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
 
     // for gyro gesture recognition: http://shukra.cedt.iisc.ernet.in/edwiki/Gesture_Recognition_and_Rendering_mouse_pointer_using_IMU_Sensor
     if(ui->checkBoxGyroMouse->isChecked()) {
-        double gyro_sensitivity = ui->horizontalSliderGyroSensitivity->value();
-        // gate and scale gyro data
+        double base_sensitivity = ui->horizontalSliderGyroSensitivity->value();
         double dead_zone = ui->doubleSpinBoxGyroDeadzone->value();
+
+        // acceleration: 0 = no acceleration (linear), 100 = max acceleration
+        double accel_strength = ui->horizontalSliderGyroAccel->value() / 100.0;
+
+        // acceleration function: slow movements are more precise, fast movements accelerate
+        auto applyAcceleration = [base_sensitivity, accel_strength](double raw_value) -> double {
+            double abs_val = std::abs(raw_value);
+            if (accel_strength < 0.01) {
+                // no acceleration, linear response
+                return base_sensitivity * raw_value;
+            }
+            // normalize to roughly 0-1 range for typical gyro values
+            double normalized = abs_val / 50.0;
+            // acceleration curve: 0-70% scales 1x-0.2x min and 1x-5x max, 70-100% caps min at 0.2x and scales max 5x-20x
+            double min_factor, max_factor;
+            if (accel_strength <= 0.7) {
+                min_factor = 1.0 - (0.8 / 0.7) * accel_strength;  // 1.0 down to 0.2 at 70%
+                max_factor = 1.0 + (4.0 / 0.7) * accel_strength;  // 1.0 up to 5.0 at 70%
+            } else {
+                min_factor = 0.2;  // capped
+                max_factor = 5.0 + ((accel_strength - 0.7) / 0.3) * 15.0;  // 5.0 up to 20.0 at 100%
+            }
+            double accel_factor = min_factor + normalized * (max_factor - min_factor);
+            double effective_sensitivity = base_sensitivity * accel_factor;
+            return (raw_value >= 0 ? 1.0 : -1.0) * effective_sensitivity * abs_val;
+        };
+
         if(abs(analog_data[13]) > dead_zone) {
+            double accel_value = applyAcceleration(analog_data[13]);
             if(_joycon_pid == JOYCON_R) {
-                dx += gyro_sensitivity*analog_data[13];
+                dx += accel_value;
             }
             else {
-                dx -= gyro_sensitivity*analog_data[13];
+                dx -= accel_value;
             }
         }
         if(abs(analog_data[12]) > dead_zone) {
+            double accel_value = applyAcceleration(analog_data[12]);
             if(_joycon_pid == JOYCON_R) {
-                dy += gyro_sensitivity*analog_data[12];
+                dy += accel_value;
             }
             else {
-                dy -= gyro_sensitivity*analog_data[12];
+                dy -= accel_value;
             }
         }
     }
@@ -1171,28 +1203,24 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     QMainWindow::resizeEvent(event);
 }
 
-// if checked, disable ZL and L buttons
+// if checked, map Y to left mouse click
 void MainWindow::on_checkBoxLeftClick_toggled(bool checked)
 {
     if(checked) {
-        _l_mapper->setClickMap(1);
-        _zl_mapper->setClickMap(2);
+        _y_mapper->setClickMap(2);
     }
     else {
-        _l_mapper->setClickMap(0);
-        _zl_mapper->setClickMap(0);
+        _y_mapper->setClickMap(0);
     }
 }
 
-// if checked, disable ZR and R buttons
+// if checked, map X to right mouse click
 void MainWindow::on_checkBoxRightClick_toggled(bool checked)
 {
     if(checked) {
-        _r_mapper->setClickMap(1);
-        _zr_mapper->setClickMap(2);
+        _x_mapper->setClickMap(1);
     }
     else {
-        _r_mapper->setClickMap(0);
-        _zr_mapper->setClickMap(0);
+        _x_mapper->setClickMap(0);
     }
 }

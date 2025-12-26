@@ -114,6 +114,8 @@ private:
     InputMapWidget* _zl_mapper = nullptr;
     InputMapWidget* _r_mapper = nullptr;
     InputMapWidget* _zr_mapper = nullptr;
+    InputMapWidget* _y_mapper = nullptr;
+    InputMapWidget* _x_mapper = nullptr;
 
     qint64 _time_last_update; // keep track of the last time the GUI was updated
 

@@ -148,7 +148,7 @@
               <number>1</number>
              </property>
              <property name="maximum">
-              <number>10</number>
+              <number>30</number>
              </property>
              <property name="value">
               <number>8</number>
@@ -201,7 +201,7 @@
            <item row="1" column="2">
             <widget class="QSpinBox" name="spinBox_2">
              <property name="maximum">
-              <number>10</number>
+              <number>30</number>
              </property>
              <property name="value">
               <number>8</number>
@@ -235,17 +235,50 @@
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>Gyro deadzone</string>
-             </property>
-            </widget>
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>Gyro deadzone</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_gyro_accel">
+              <property name="text">
+               <string>Gyro acceleration</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QSlider" name="horizontalSliderGyroAccel">
+              <property name="minimum">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="value">
+               <number>50</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="2">
+             <widget class="QSpinBox" name="spinBoxGyroAccel">
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="value">
+               <number>50</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+           </widget>
            </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QGroupBox" name="groupBoxApplicationSettings">
+           <item row="1" column="0">
+           <widget class="QGroupBox" name="groupBoxApplicationSettings">
           <property name="title">
            <string>Application settings</string>
           </property>
@@ -401,7 +434,7 @@
         <item row="2" column="0">
          <widget class="QCheckBox" name="checkBoxLeftClick">
           <property name="text">
-           <string>Click with L / ZL</string>
+           <string>Left click with Y</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -431,7 +464,7 @@
         <item row="2" column="1">
          <widget class="QCheckBox" name="checkBoxRightClick">
           <property name="text">
-           <string>Click with R / ZR</string>
+           <string>Right click with X</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -771,20 +804,52 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionQuit</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>255</x>
-     <y>286</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
-</ui>
+    <sender>actionQuit</sender>
+    <signal>triggered()</signal>
+    <receiver>MainWindow</receiver>
+    <slot>close()</slot>
+    <hints>
+     <hint type="sourcelabel">
+      <x>-1</x>
+      <y>-1</y>
+     </hint>
+     <hint type="destinationlabel">
+      <x>255</x>
+      <y>286</y>
+     </hint>
+    </hints>
+   </connection>
+   <connection>
+    <sender>horizontalSliderGyroAccel</sender>
+    <signal>valueChanged(int)</signal>
+    <receiver>spinBoxGyroAccel</receiver>
+    <slot>setValue(int)</slot>
+    <hints>
+     <hint type="sourcelabel">
+      <x>271</x>
+      <y>410</y>
+     </hint>
+     <hint type="destinationlabel">
+      <x>365</x>
+      <y>410</y>
+     </hint>
+    </hints>
+   </connection>
+   <connection>
+    <sender>spinBoxGyroAccel</sender>
+    <signal>valueChanged(int)</signal>
+    <receiver>horizontalSliderGyroAccel</receiver>
+    <slot>setValue(int)</slot>
+    <hints>
+     <hint type="sourcelabel">
+      <x>337</x>
+      <y>410</y>
+     </hint>
+     <hint type="destinationlabel">
+      <x>281</x>
+      <y>410</y>
+     </hint>
+    </hints>
+   </connection>
+  </connections>
+  </ui>

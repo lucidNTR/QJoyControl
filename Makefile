@@ -492,6 +492,7 @@ first: all
 QJoyControl.app/Contents/MacOS/QJoyControl: ui_inputmappanel.h ui_inputmapwidget.h ui_mainwindow.h ui_statuswidget.h $(OBJECTS)  
 	@test -d QJoyControl.app/Contents/MacOS/ || mkdir -p QJoyControl.app/Contents/MacOS/
 	$(LINK) $(LFLAGS) -o $(TARGET)  $(OBJECTS) $(OBJCOMP) $(LIBS)
+	codesign --force --deep --sign - /Users/jan/Dev/xe/joycontrol/QJoyControl/QJoyControl.app
 
 Makefile: QJoyControl.pro /opt/homebrew/share/qt/mkspecs/macx-clang/qmake.conf /opt/homebrew/share/qt/mkspecs/features/spec_pre.prf \
 		/opt/homebrew/share/qt/mkspecs/features/device_config.prf \

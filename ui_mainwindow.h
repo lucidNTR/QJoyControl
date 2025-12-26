@@ -67,6 +67,9 @@ public:
     QSpacerItem *horizontalSpacer_2;
     QDoubleSpinBox *doubleSpinBoxGyroDeadzone;
     QLabel *label_4;
+    QLabel *label_gyro_accel;
+    QSlider *horizontalSliderGyroAccel;
+    QSpinBox *spinBoxGyroAccel;
     QGroupBox *groupBoxApplicationSettings;
     QGridLayout *gridLayout_6;
     QCheckBox *checkBoxDiagnostics;
@@ -218,7 +221,7 @@ public:
         horizontalSliderGyroSensitivity = new QSlider(groupBoxMouseSettings);
         horizontalSliderGyroSensitivity->setObjectName("horizontalSliderGyroSensitivity");
         horizontalSliderGyroSensitivity->setMinimum(1);
-        horizontalSliderGyroSensitivity->setMaximum(10);
+        horizontalSliderGyroSensitivity->setMaximum(30);
         horizontalSliderGyroSensitivity->setValue(8);
         horizontalSliderGyroSensitivity->setOrientation(Qt::Horizontal);
 
@@ -252,7 +255,7 @@ public:
 
         spinBox_2 = new QSpinBox(groupBoxMouseSettings);
         spinBox_2->setObjectName("spinBox_2");
-        spinBox_2->setMaximum(10);
+        spinBox_2->setMaximum(30);
         spinBox_2->setValue(8);
 
         gridLayout_7->addWidget(spinBox_2, 1, 2, 1, 1);
@@ -273,6 +276,27 @@ public:
         label_4->setObjectName("label_4");
 
         gridLayout_7->addWidget(label_4, 2, 0, 1, 1);
+
+        label_gyro_accel = new QLabel(groupBoxMouseSettings);
+        label_gyro_accel->setObjectName("label_gyro_accel");
+
+        gridLayout_7->addWidget(label_gyro_accel, 4, 0, 1, 1);
+
+        horizontalSliderGyroAccel = new QSlider(groupBoxMouseSettings);
+        horizontalSliderGyroAccel->setObjectName("horizontalSliderGyroAccel");
+        horizontalSliderGyroAccel->setMinimum(0);
+        horizontalSliderGyroAccel->setMaximum(100);
+        horizontalSliderGyroAccel->setValue(50);
+        horizontalSliderGyroAccel->setOrientation(Qt::Horizontal);
+
+        gridLayout_7->addWidget(horizontalSliderGyroAccel, 4, 1, 1, 1);
+
+        spinBoxGyroAccel = new QSpinBox(groupBoxMouseSettings);
+        spinBoxGyroAccel->setObjectName("spinBoxGyroAccel");
+        spinBoxGyroAccel->setMaximum(100);
+        spinBoxGyroAccel->setValue(50);
+
+        gridLayout_7->addWidget(spinBoxGyroAccel, 4, 2, 1, 1);
 
 
         gridLayout_5->addWidget(groupBoxMouseSettings, 2, 0, 1, 2);
@@ -572,6 +596,8 @@ public:
         QObject::connect(spinBox, &QSpinBox::valueChanged, horizontalSliderAnalogSensitivity, &QSlider::setValue);
         QObject::connect(spinBox_2, &QSpinBox::valueChanged, horizontalSliderGyroSensitivity, &QSlider::setValue);
         QObject::connect(actionQuit, &QAction::triggered, MainWindow, qOverload<>(&QMainWindow::close));
+        QObject::connect(horizontalSliderGyroAccel, &QSlider::valueChanged, spinBoxGyroAccel, &QSpinBox::setValue);
+        QObject::connect(spinBoxGyroAccel, &QSpinBox::valueChanged, horizontalSliderGyroAccel, &QSlider::setValue);
 
         tabWidget->setCurrentIndex(0);
 
@@ -595,6 +621,7 @@ public:
         label_2->setText(QCoreApplication::translate("MainWindow", "Analog sensitivity", nullptr));
         label_3->setText(QCoreApplication::translate("MainWindow", "Gyro sensitivity", nullptr));
         label_4->setText(QCoreApplication::translate("MainWindow", "Gyro deadzone", nullptr));
+        label_gyro_accel->setText(QCoreApplication::translate("MainWindow", "Gyro acceleration", nullptr));
         groupBoxApplicationSettings->setTitle(QCoreApplication::translate("MainWindow", "Application settings", nullptr));
         checkBoxDiagnostics->setText(QCoreApplication::translate("MainWindow", "Show diagnostics tab", nullptr));
         checkBoxAppNap->setText(QCoreApplication::translate("MainWindow", "Prevent App Nap", nullptr));
@@ -605,10 +632,10 @@ public:
         groupBoxJoyConSettings->setTitle(QCoreApplication::translate("MainWindow", "JoyCon Settings", nullptr));
         label->setText(QCoreApplication::translate("MainWindow", "Player LED", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tabSettings), QCoreApplication::translate("MainWindow", "Settings", nullptr));
-        checkBoxLeftClick->setText(QCoreApplication::translate("MainWindow", "Click with L / ZL", nullptr));
+        checkBoxLeftClick->setText(QCoreApplication::translate("MainWindow", "Left click with Y", nullptr));
         checkBoxGyroMouse->setText(QCoreApplication::translate("MainWindow", "Move mouse with gyro data", nullptr));
         checkBoxRightAnalogMouse->setText(QCoreApplication::translate("MainWindow", "Move mouse with right analog data", nullptr));
-        checkBoxRightClick->setText(QCoreApplication::translate("MainWindow", "Click with R / ZR", nullptr));
+        checkBoxRightClick->setText(QCoreApplication::translate("MainWindow", "Right click with X", nullptr));
         checkBoxLeftAnalogMouse->setText(QCoreApplication::translate("MainWindow", "Move mouse with left analog data", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tabControls), QCoreApplication::translate("MainWindow", "Controls", nullptr));
         groupBoxExposure->setTitle(QCoreApplication::translate("MainWindow", "Exposure", nullptr));
