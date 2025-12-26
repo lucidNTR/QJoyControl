@@ -48,6 +48,7 @@ public:
     void handleButtonRelease(int button_mask);
     void addMapping(int from, int to);
     void mapToMouseButton(int mask, int button);
+    bool isMappedToMouse(int button_mask) const;
 
 private:
     //< a map to lookup OS button press from JoyCon buttom press

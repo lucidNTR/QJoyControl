@@ -867,18 +867,6 @@ double MainWindow::scaleAnalog(double input){
 
 void MainWindow::handleButtons(QList<int> buttons)
 {
-    qint64 now = QDateTime::currentMSecsSinceEpoch();
-    static qint64 repeat_start_time0 = now;
-    static qint64 repeat_start_time1 = now;
-    static qint64 repeat_start_time2 = now;
-    static qint64 last_repeat_time0 = now;
-    static qint64 last_repeat_time1 = now;
-    static qint64 last_repeat_time2 = now;
-
-    static qint64 key_rep_delay = 500; // repeat button after 500 ms hold
-    static qint64 key_rep_period = 50; // button repeats every 50 ms
-
-
     //face buttons on R joycon
     if(buttons.at(0) != _last_button_state[0]) {
         testButton(_last_button_state[0], buttons[0], R_BUT_Y);
@@ -890,24 +878,6 @@ void MainWindow::handleButtons(QList<int> buttons)
         testButton(_last_button_state[0], buttons[0], R_BUT_R);
         testButton(_last_button_state[0], buttons[0], R_BUT_ZR);
         _last_button_state[0] = buttons.at(0); // store the new button state reading
-        repeat_start_time0 = now;
-    }
-    else {
-        // test for repeats
-        if(buttons.at(0) != 0 &&
-                (now - repeat_start_time0 > key_rep_delay) &&
-                (now - last_repeat_time0 > key_rep_period) )
-        {
-            testButton(_last_button_state[0], buttons[0], R_BUT_Y);
-            testButton(_last_button_state[0], buttons[0], R_BUT_X);
-            testButton(_last_button_state[0], buttons[0], R_BUT_B);
-            testButton(_last_button_state[0], buttons[0], R_BUT_A);
-            testButton(_last_button_state[0], buttons[0], R_BUT_SR);
-            testButton(_last_button_state[0], buttons[0], R_BUT_SL);
-            testButton(_last_button_state[0], buttons[0], R_BUT_R);
-            testButton(_last_button_state[0], buttons[0], R_BUT_ZR);
-            last_repeat_time0 = now;
-        }
     }
 
     //shared button data (R and L)
@@ -920,23 +890,6 @@ void MainWindow::handleButtons(QList<int> buttons)
         testButton(_last_button_state[1], buttons[1], L_BUT_CAP | 256);
         testButton(_last_button_state[1], buttons[1], CHARGE_GRIP | 256);
         _last_button_state[1] = buttons.at(1); // store the new button state reading
-        repeat_start_time1 = now;
-    }
-    else {
-        // test for repeats
-        if(buttons.at(1) != 0 &&
-                (now - repeat_start_time1 > key_rep_delay) &&
-                (now - last_repeat_time1 > key_rep_period) )
-        {
-            testButton(_last_button_state[1], buttons[1], L_BUT_MINUS | 256);
-            testButton(_last_button_state[1], buttons[1], R_BUT_PLUS | 256);
-            testButton(_last_button_state[1], buttons[1], R_BUT_STICK | 256);
-            testButton(_last_button_state[1], buttons[1], L_BUT_STICK | 256);
-            testButton(_last_button_state[1], buttons[1], R_BUT_HOME | 256);
-            testButton(_last_button_state[1], buttons[1], L_BUT_CAP | 256);
-            testButton(_last_button_state[1], buttons[1], CHARGE_GRIP | 256);
-            last_repeat_time1 = now;
-        }
     }
 
     // L joycon buttun data
@@ -950,25 +903,6 @@ void MainWindow::handleButtons(QList<int> buttons)
         testButton(_last_button_state[2], buttons[2], L_BUT_L | 512);
         testButton(_last_button_state[2], buttons[2], L_BUT_ZL | 512);
         _last_button_state[2] = buttons.at(2); // store the new button state reading
-        repeat_start_time2 = now;
-    }
-    else {
-        // the button states have not changed since the last report
-        // test for repeats
-        if(buttons.at(2) != 0 &&
-                (now - repeat_start_time2 > key_rep_delay) &&
-                (now - last_repeat_time2 > key_rep_period))
-        {
-            testButton(_last_button_state[2], buttons[2], L_BUT_DOWN | 512);
-            testButton(_last_button_state[2], buttons[2], L_BUT_UP | 512);
-            testButton(_last_button_state[2], buttons[2], L_BUT_RIGHT | 512);
-            testButton(_last_button_state[2], buttons[2], L_BUT_LEFT | 512);
-            testButton(_last_button_state[2], buttons[2], L_BUT_SR | 512);
-            testButton(_last_button_state[2], buttons[2], L_BUT_SL | 512);
-            testButton(_last_button_state[2], buttons[2], L_BUT_L | 512);
-            testButton(_last_button_state[2], buttons[2], L_BUT_ZL | 512);
-            last_repeat_time2 = now;
-        }
     }
 }
 
@@ -980,7 +914,6 @@ void MainWindow::handleButtons(QList<int> buttons)
  */
 void MainWindow::testButton(int last_button_state, int button_state, int mask)
 {
-    // note: testButton is only called when a button state changes
     // button is currently pressed
     if(button_state & mask) {
         _event_handler->handleButtonPress(mask);

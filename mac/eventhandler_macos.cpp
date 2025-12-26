@@ -128,6 +128,12 @@ void EventHandler::mapToMouseButton(int mask, int button)
     }
 }
 
+bool EventHandler::isMappedToMouse(int button_mask) const
+{
+    int mapped = keyCodeMap.value(button_mask, -1);
+    return mapped == kCGEventLeftMouseDown || mapped == kCGEventRightMouseDown;
+}
+
 void EventHandler::handleMouseMove(double dx, double dy){
     CGEventRef get = CGEventCreate(nullptr);
     CGPoint mouse = CGEventGetLocation(get);

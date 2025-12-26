@@ -26,3 +26,19 @@ void EventHandler::handleButtonPress(int button_mask){
 void EventHandler::handleButtonRelease(int button_mask){
 
 }
+
+void EventHandler::addMapping(int from, int to)
+{
+    keyCodeMap.insert(from, to);
+}
+
+void EventHandler::mapToMouseButton(int mask, int button)
+{
+    // TODO: implement for Linux
+}
+
+bool EventHandler::isMappedToMouse(int button_mask) const
+{
+    // TODO: implement for Linux when mouse button mapping is added
+    return false;
+}
