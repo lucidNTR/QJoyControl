@@ -88,6 +88,8 @@ private slots:
 
     void on_checkBoxRightClick_toggled(bool checked);
 
+    void on_checkBoxRequireZR_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
     StatusWidget* _status_widget;
@@ -108,6 +110,7 @@ private:
     QString _joycon_sn = QString();
     // hold the last button state received
     int _last_button_state[3] = {0,0,0};
+    bool _zr_held = false;
     QImage _current_image = QImage();
     QVector<QRgb> _color_table;
     InputMapWidget* _l_mapper = nullptr;

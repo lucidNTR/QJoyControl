@@ -3,6 +3,7 @@
 
 #include <QtGlobal>
 #include <QMap>
+#include <QSet>
 
 /*!
  * \brief The JOYCON_BUTTONS enum is used to mask
@@ -49,8 +50,11 @@ public:
     void addMapping(int from, int to);
     void mapToMouseButton(int mask, int button);
     bool isMappedToMouse(int button_mask) const;
+    void disableButton(int button_mask);
+    void enableButton(int button_mask, int key_code);
 
 private:
+    QSet<int> _disabled_buttons;
     //< a map to lookup OS button press from JoyCon buttom press
     //< JoyCon buttons from byte 4 are & with 256
     //< JoyCon buttons from byte 5 are & with 512

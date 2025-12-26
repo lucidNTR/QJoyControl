@@ -42,3 +42,15 @@ bool EventHandler::isMappedToMouse(int button_mask) const
     // TODO: implement for Linux when mouse button mapping is added
     return false;
 }
+
+void EventHandler::disableButton(int button_mask)
+{
+    _disabled_buttons.insert(button_mask);
+    keyCodeMap.remove(button_mask);
+}
+
+void EventHandler::enableButton(int button_mask, int key_code)
+{
+    _disabled_buttons.remove(button_mask);
+    addMapping(button_mask, key_code);
+}

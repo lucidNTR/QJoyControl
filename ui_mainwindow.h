@@ -90,6 +90,7 @@ public:
     QGridLayout *gridLayout_8;
     QCheckBox *checkBoxLeftClick;
     QCheckBox *checkBoxGyroMouse;
+    QCheckBox *checkBoxRequireZR;
     QCheckBox *checkBoxRightAnalogMouse;
     QCheckBox *checkBoxRightClick;
     QCheckBox *checkBoxLeftAnalogMouse;
@@ -402,6 +403,12 @@ public:
 
         gridLayout_8->addWidget(checkBoxGyroMouse, 3, 1, 1, 1);
 
+        checkBoxRequireZR = new QCheckBox(tabControls);
+        checkBoxRequireZR->setObjectName("checkBoxRequireZR");
+        checkBoxRequireZR->setChecked(false);
+
+        gridLayout_8->addWidget(checkBoxRequireZR, 4, 0, 1, 2);
+
         checkBoxRightAnalogMouse = new QCheckBox(tabControls);
         checkBoxRightAnalogMouse->setObjectName("checkBoxRightAnalogMouse");
         checkBoxRightAnalogMouse->setChecked(true);
@@ -634,6 +641,7 @@ public:
         tabWidget->setTabText(tabWidget->indexOf(tabSettings), QCoreApplication::translate("MainWindow", "Settings", nullptr));
         checkBoxLeftClick->setText(QCoreApplication::translate("MainWindow", "Left click with Y", nullptr));
         checkBoxGyroMouse->setText(QCoreApplication::translate("MainWindow", "Move mouse with gyro data", nullptr));
+        checkBoxRequireZR->setText(QCoreApplication::translate("MainWindow", "Require ZR to be held for mouse tracking", nullptr));
         checkBoxRightAnalogMouse->setText(QCoreApplication::translate("MainWindow", "Move mouse with right analog data", nullptr));
         checkBoxRightClick->setText(QCoreApplication::translate("MainWindow", "Right click with X", nullptr));
         checkBoxLeftAnalogMouse->setText(QCoreApplication::translate("MainWindow", "Move mouse with left analog data", nullptr));

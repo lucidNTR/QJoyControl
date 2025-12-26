@@ -134,6 +134,18 @@ bool EventHandler::isMappedToMouse(int button_mask) const
     return mapped == kCGEventLeftMouseDown || mapped == kCGEventRightMouseDown;
 }
 
+void EventHandler::disableButton(int button_mask)
+{
+    _disabled_buttons.insert(button_mask);
+    keyCodeMap.remove(button_mask);
+}
+
+void EventHandler::enableButton(int button_mask, int key_code)
+{
+    _disabled_buttons.remove(button_mask);
+    addMapping(button_mask, key_code);
+}
+
 void EventHandler::handleMouseMove(double dx, double dy){
     CGEventRef get = CGEventCreate(nullptr);
     CGPoint mouse = CGEventGetLocation(get);
@@ -203,6 +215,10 @@ void EventHandler::handleMouseMove(double dx, double dy){
  * \param button_mask
  */
 void EventHandler::handleButtonPress(int button_mask){
+    // skip disabled buttons
+    if(_disabled_buttons.contains(button_mask)) {
+        return;
+    }
     // check if a mouse button is mapped to the button
     if(keyCodeMap.value(button_mask) == kCGEventLeftMouseDown){
 
@@ -245,6 +261,10 @@ void EventHandler::handleButtonPress(int button_mask){
 }
 
 void EventHandler::handleButtonRelease(int button_mask){
+    // skip disabled buttons
+    if(_disabled_buttons.contains(button_mask)) {
+        return;
+    }
     if(keyCodeMap.value(button_mask) == kCGEventLeftMouseDown ){
 
         CGEventRef get = CGEventCreate(nullptr);

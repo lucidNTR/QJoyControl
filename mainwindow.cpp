@@ -360,8 +360,14 @@ void MainWindow::loadSettings(){
         ui->doubleSpinBoxGyroDeadzone->setValue(settings.value("gyro-dead-zone").toDouble());
     }
     if(settings.contains("gyro-acceleration")) {
-        ui->horizontalSliderGyroAccel->setValue(settings.value("gyro-acceleration").toInt());
+        int accel = settings.value("gyro-acceleration").toInt();
+        ui->horizontalSliderGyroAccel->setValue(accel);
+        ui->spinBoxGyroAccel->setValue(accel);
     }
+    if(settings.contains("require-zr-for-mouse")) {
+        ui->checkBoxRequireZR->setChecked(settings.value("require-zr-for-mouse").toBool());
+    }
+    on_checkBoxRequireZR_toggled(ui->checkBoxRequireZR->isChecked());
     if(settings.contains("last-connection")) {
         QString last_sn = settings.value("last-connection").toString();
         if(settings.contains("auto-connect")){
@@ -411,10 +417,12 @@ void MainWindow::saveSettings()
     settings.setValue("gyro-mouse", ui->checkBoxGyroMouse->isChecked());
     settings.setValue("gyro-dead-zone", ui->doubleSpinBoxGyroDeadzone->value());
     settings.setValue("gyro-acceleration", ui->horizontalSliderGyroAccel->value());
+    settings.setValue("require-zr-for-mouse", ui->checkBoxRequireZR->isChecked());
 
     if(!_joycon_sn.isEmpty()) {
         settings.setValue("last-connection", _joycon_sn);
     }
+    settings.sync();
 }
 
 void MainWindow::onDeviceConnectionChanged(QString sn, const unsigned short pid)
@@ -556,6 +564,11 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
     else {
         // do nothing
         _update_count++;
+    }
+
+    // skip mouse tracking if ZR is required but not held
+    if(ui->checkBoxRequireZR->isChecked() && !_zr_held) {
+        return;
     }
 
     if(ui->checkBoxLeftAnalogMouse->isChecked()) {
@@ -867,6 +880,9 @@ double MainWindow::scaleAnalog(double input){
 
 void MainWindow::handleButtons(QList<int> buttons)
 {
+    // track ZR held state for mouse tracking
+    _zr_held = (buttons.at(0) & R_BUT_ZR) != 0;
+
     //face buttons on R joycon
     if(buttons.at(0) != _last_button_state[0]) {
         testButton(_last_button_state[0], buttons[0], R_BUT_Y);
@@ -1155,5 +1171,19 @@ void MainWindow::on_checkBoxRightClick_toggled(bool checked)
     }
     else {
         _x_mapper->setClickMap(0);
+    }
+}
+
+// if checked, ZR is used for mouse activation - disable its keyboard mapping
+void MainWindow::on_checkBoxRequireZR_toggled(bool checked)
+{
+    if(checked) {
+        _zr_mapper->setEnabled(false);
+        _event_handler->disableButton(R_BUT_ZR);
+    }
+    else {
+        _zr_mapper->setEnabled(true);
+        // re-enable with default key (will be overridden if user has a saved mapping)
+        _event_handler->enableButton(R_BUT_ZR, Qt::Key_S);
     }
 }
