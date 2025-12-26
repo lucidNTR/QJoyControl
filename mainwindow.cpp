@@ -588,10 +588,13 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
         }
     }
 
-    // skip mouse tracking based on ZR toggle state
+    // skip mouse tracking based on ZR state
     if(ui->checkBoxRequireZR->isChecked()) {
         bool invert = ui->checkBoxInvertZR->isChecked();
-        bool active = invert ? !_mouse_toggle_active : _mouse_toggle_active;
+        // combine toggle state with hold state
+        bool base_active = invert ? !_mouse_toggle_active : _mouse_toggle_active;
+        // holding ZR temporarily inverts the current state
+        bool active = _zr_held ? !base_active : base_active;
         if(!active) {
             return;
         }
@@ -629,7 +632,9 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
                 min_factor = 0.2 - ((accel_strength - 0.7) / 0.3) * 0.1;  // 0.2 down to 0.1 at 100%
                 max_factor = 5.0 + ((accel_strength - 0.7) / 0.3) * 25.0;  // 5.0 up to 30.0 at 100%
             }
-            double accel_factor = min_factor + normalized * (max_factor - min_factor);
+            // apply power curve so slow movements stay slow longer, but max speed unchanged
+            double curved = std::pow(std::min(normalized, 1.0), 1.1);
+            double accel_factor = min_factor + curved * (max_factor - min_factor);
             double effective_sensitivity = base_sensitivity * accel_factor;
             return (raw_value >= 0 ? 1.0 : -1.0) * effective_sensitivity * abs_val;
         };
