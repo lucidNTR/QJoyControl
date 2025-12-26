@@ -486,7 +486,7 @@ struct hid_device_info  HID_API_EXPORT *hid_enumerate(unsigned short vendor_id, 
             cur_dev->release_number = get_int_property(dev, CFSTR(kIOHIDVersionNumberKey));
 
             // store the current IOHIDDeviceRef
-            cur_dev->dev_ref = dev;
+            cur_dev->dev_ref = (unsigned long long)(uintptr_t)dev;
 
             /* We can only retrieve the interface number for USB HID devices.
              * IOKit always seems to return 0 when querying a standard USB device
@@ -526,7 +526,7 @@ hid_device * HID_API_EXPORT hid_open(unsigned short vendor_id, unsigned short pr
     /* This function is identical to the Linux version. Platform independent. */
     struct hid_device_info *devs, *cur_dev;
     const char *path_to_open = NULL;
-    IOHIDDeviceRef dev_to_open = NULL;
+    unsigned long long dev_to_open = 0;
     hid_device * handle = NULL;
     devs = hid_enumerate(vendor_id, product_id);
     cur_dev = devs;
@@ -535,8 +535,12 @@ hid_device * HID_API_EXPORT hid_open(unsigned short vendor_id, unsigned short pr
                 cur_dev->product_id == product_id) {
             if (serial_number) {
                 if (wcscmp(serial_number, cur_dev->serial_number) == 0) {
-                    // when there is a serial number, use the reference instead of the path
-                    dev_to_open = cur_dev->dev_ref;
+                    // try path first, fall back to dev_ref if path is empty
+                    if (cur_dev->path && cur_dev->path[0] != '\0') {
+                        path_to_open = cur_dev->path;
+                    } else {
+                        dev_to_open = cur_dev->dev_ref;
+                    }
                     break;
                 }
                 else {
@@ -544,7 +548,11 @@ hid_device * HID_API_EXPORT hid_open(unsigned short vendor_id, unsigned short pr
                 }
             }
             else {
-                path_to_open = cur_dev->path;
+                if (cur_dev->path && cur_dev->path[0] != '\0') {
+                    path_to_open = cur_dev->path;
+                } else {
+                    dev_to_open = cur_dev->dev_ref;
+                }
                 break;
             }
         }
@@ -717,10 +725,15 @@ hid_device * HID_API_EXPORT hid_open_path(const char *path)//, const unsigned lo
     dev = new_hid_device();
 
     /* Get the IORegistry entry for the given path */
+#if defined(__MAC_OS_X_VERSION_MIN_REQUIRED) && __MAC_OS_X_VERSION_MIN_REQUIRED >= 120000
+    entry = IORegistryEntryFromPath(kIOMainPortDefault, path);
+#else
     entry = IORegistryEntryFromPath(kIOMasterPortDefault, path);
+#endif
 
     if (entry == MACH_PORT_NULL) {
         // Path wasn't valid (maybe device was removed?)
+        fprintf(stderr, "HIDAPI: IORegistryEntryFromPath failed for path: %s\n", path);
         goto return_error;
     }
 
@@ -762,6 +775,7 @@ hid_device * HID_API_EXPORT hid_open_path(const char *path)//, const unsigned lo
         return dev;
     }
     else {
+        fprintf(stderr, "HIDAPI: IOHIDDeviceOpen failed with error: 0x%x\n", ret);
         goto return_error;
     }
 
@@ -779,7 +793,6 @@ return_error:
 hid_device * HID_API_EXPORT hid_open_ref(const unsigned long long dev_ref)
 {
     hid_device *dev = NULL;
-    //io_registry_entry_t entry = MACH_PORT_NULL;
     IOReturn ret = kIOReturnInvalid;
 
     /* Set up the HID Manager if it hasn't been done */
@@ -788,13 +801,16 @@ hid_device * HID_API_EXPORT hid_open_ref(const unsigned long long dev_ref)
 
     dev = new_hid_device();
 
-    io_object_t iokit_dev = hidapi_IOHIDDeviceGetService(dev_ref);
-    /* Create an IOHIDDevice for the entry */
-    dev->device_handle = IOHIDDeviceCreate(kCFAllocatorDefault, iokit_dev);
-    if (dev->device_handle == NULL) {
-        /* Error creating the HID device */
+    /* Use the IOHIDDeviceRef directly - retain it since we'll be using it */
+    IOHIDDeviceRef device_ref = (IOHIDDeviceRef)(uintptr_t)dev_ref;
+    if (device_ref == NULL) {
+        fprintf(stderr, "HIDAPI: dev_ref is NULL\n");
         goto return_error;
     }
+    
+    /* Retain the device reference */
+    CFRetain(device_ref);
+    dev->device_handle = device_ref;
 
     /* Open the IOHIDDevice */
     ret = IOHIDDeviceOpen(dev->device_handle, kIOHIDOptionsTypeSeizeDevice);

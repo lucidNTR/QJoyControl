@@ -56,7 +56,7 @@ FORMS += \
 
 macx {
     CONFIG += app_bundle
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
     ICON = img/Logo.icns
 
     # use custom plist to hide dock icon
