@@ -461,16 +461,39 @@
            </property>
           </widget>
          </item>
+         <item row="5" column="0" colspan="2">
+          <widget class="QCheckBox" name="checkBoxInvertZR">
+           <property name="text">
+            <string>Invert ZR (disable mouse tracking when pressed)</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
         <item row="1" column="1">
-         <widget class="QCheckBox" name="checkBoxRightAnalogMouse">
-                    <property name="text">
-                     <string>Scroll with right analog data</string>
-                    </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
+          <widget class="QCheckBox" name="checkBoxRightAnalogMouse">
+                     <property name="text">
+                      <string>Scroll with right analog data</string>
+                     </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0" colspan="2">
+          <widget class="QCheckBox" name="checkBoxInvertScroll">
+           <property name="text">
+            <string>Invert scroll direction</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
         <item row="2" column="1">
          <widget class="QCheckBox" name="checkBoxRightClick">
           <property name="text">

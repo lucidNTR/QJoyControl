@@ -207,6 +207,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::hideAndClose()
 {
     _force_close = true;
+    saveSettings();
     // let the thread complete shutdown
     if(_thread != nullptr) {
         _thread->quit();
@@ -368,6 +369,12 @@ void MainWindow::loadSettings(){
         ui->checkBoxRequireZR->setChecked(settings.value("require-zr-for-mouse").toBool());
     }
     on_checkBoxRequireZR_toggled(ui->checkBoxRequireZR->isChecked());
+    if(settings.contains("invert-zr-for-mouse")) {
+        ui->checkBoxInvertZR->setChecked(settings.value("invert-zr-for-mouse").toBool());
+    }
+    if(settings.contains("invert-scroll")) {
+        ui->checkBoxInvertScroll->setChecked(settings.value("invert-scroll").toBool());
+    }
     if(settings.contains("last-connection")) {
         QString last_sn = settings.value("last-connection").toString();
         if(settings.contains("auto-connect")){
@@ -418,6 +425,8 @@ void MainWindow::saveSettings()
     settings.setValue("gyro-dead-zone", ui->doubleSpinBoxGyroDeadzone->value());
     settings.setValue("gyro-acceleration", ui->horizontalSliderGyroAccel->value());
     settings.setValue("require-zr-for-mouse", ui->checkBoxRequireZR->isChecked());
+    settings.setValue("invert-zr-for-mouse", ui->checkBoxInvertZR->isChecked());
+    settings.setValue("invert-scroll", ui->checkBoxInvertScroll->isChecked());
 
     if(!_joycon_sn.isEmpty()) {
         settings.setValue("last-connection", _joycon_sn);
@@ -570,14 +579,22 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
     if(ui->checkBoxRightAnalogMouse->isChecked()) {
         double scroll_dx = scaleAnalog(analog_data[6]);
         double scroll_dy = scaleAnalog(analog_data[7]);
+        if(ui->checkBoxInvertScroll->isChecked()) {
+            scroll_dx = -scroll_dx;
+            scroll_dy = -scroll_dy;
+        }
         if(!qFuzzyIsNull(scroll_dx) || !qFuzzyIsNull(scroll_dy)) {
             _event_handler->handleScroll(scroll_dx, scroll_dy);
         }
     }
 
-    // skip mouse tracking if ZR is required but not held
-    if(ui->checkBoxRequireZR->isChecked() && !_zr_held) {
-        return;
+    // skip mouse tracking based on ZR toggle state
+    if(ui->checkBoxRequireZR->isChecked()) {
+        bool invert = ui->checkBoxInvertZR->isChecked();
+        bool active = invert ? !_mouse_toggle_active : _mouse_toggle_active;
+        if(!active) {
+            return;
+        }
     }
 
     if(ui->checkBoxLeftAnalogMouse->isChecked()) {
@@ -609,8 +626,8 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
                 min_factor = 1.0 - (0.8 / 0.7) * accel_strength;  // 1.0 down to 0.2 at 70%
                 max_factor = 1.0 + (4.0 / 0.7) * accel_strength;  // 1.0 up to 5.0 at 70%
             } else {
-                min_factor = 0.2;  // capped
-                max_factor = 5.0 + ((accel_strength - 0.7) / 0.3) * 15.0;  // 5.0 up to 20.0 at 100%
+                min_factor = 0.2 - ((accel_strength - 0.7) / 0.3) * 0.1;  // 0.2 down to 0.1 at 100%
+                max_factor = 5.0 + ((accel_strength - 0.7) / 0.3) * 25.0;  // 5.0 up to 30.0 at 100%
             }
             double accel_factor = min_factor + normalized * (max_factor - min_factor);
             double effective_sensitivity = base_sensitivity * accel_factor;
@@ -885,7 +902,22 @@ double MainWindow::scaleAnalog(double input){
 void MainWindow::handleButtons(QList<int> buttons)
 {
     // track ZR held state for mouse tracking
-    _zr_held = (buttons.at(0) & R_BUT_ZR) != 0;
+    bool zr_now = (buttons.at(0) & R_BUT_ZR) != 0;
+    
+    // detect ZR press/release for toggle
+    if(ui->checkBoxRequireZR->isChecked()) {
+        if(zr_now && !_zr_held) {
+            // ZR just pressed - record time
+            _zr_press_time = QDateTime::currentMSecsSinceEpoch();
+        } else if(!zr_now && _zr_held) {
+            // ZR just released - check if short press
+            qint64 press_duration = QDateTime::currentMSecsSinceEpoch() - _zr_press_time;
+            if(press_duration <= ZR_SHORT_PRESS_MS) {
+                _mouse_toggle_active = !_mouse_toggle_active;
+            }
+        }
+    }
+    _zr_held = zr_now;
 
     //face buttons on R joycon
     if(buttons.at(0) != _last_button_state[0]) {
@@ -1184,10 +1216,18 @@ void MainWindow::on_checkBoxRequireZR_toggled(bool checked)
     if(checked) {
         _zr_mapper->setEnabled(false);
         _event_handler->disableButton(R_BUT_ZR);
+        ui->checkBoxInvertZR->setEnabled(true);
     }
     else {
         _zr_mapper->setEnabled(true);
         // re-enable with default key (will be overridden if user has a saved mapping)
         _event_handler->enableButton(R_BUT_ZR, Qt::Key_S);
+        ui->checkBoxInvertZR->setEnabled(false);
+        ui->checkBoxInvertZR->setChecked(false);
     }
+}
+
+void MainWindow::on_checkBoxInvertZR_toggled(bool checked)
+{
+    Q_UNUSED(checked);
 }

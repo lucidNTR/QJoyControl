@@ -91,7 +91,9 @@ public:
     QCheckBox *checkBoxLeftClick;
     QCheckBox *checkBoxGyroMouse;
     QCheckBox *checkBoxRequireZR;
+    QCheckBox *checkBoxInvertZR;
     QCheckBox *checkBoxRightAnalogMouse;
+    QCheckBox *checkBoxInvertScroll;
     QCheckBox *checkBoxRightClick;
     QCheckBox *checkBoxLeftAnalogMouse;
     InputMapPanel *inputMapL;
@@ -409,11 +411,24 @@ public:
 
         gridLayout_8->addWidget(checkBoxRequireZR, 4, 0, 1, 2);
 
+        checkBoxInvertZR = new QCheckBox(tabControls);
+        checkBoxInvertZR->setObjectName("checkBoxInvertZR");
+        checkBoxInvertZR->setChecked(false);
+        checkBoxInvertZR->setEnabled(false);
+
+        gridLayout_8->addWidget(checkBoxInvertZR, 5, 0, 1, 2);
+
         checkBoxRightAnalogMouse = new QCheckBox(tabControls);
         checkBoxRightAnalogMouse->setObjectName("checkBoxRightAnalogMouse");
         checkBoxRightAnalogMouse->setChecked(true);
 
         gridLayout_8->addWidget(checkBoxRightAnalogMouse, 1, 1, 1, 1);
+
+        checkBoxInvertScroll = new QCheckBox(tabControls);
+        checkBoxInvertScroll->setObjectName("checkBoxInvertScroll");
+        checkBoxInvertScroll->setChecked(false);
+
+        gridLayout_8->addWidget(checkBoxInvertScroll, 6, 0, 1, 2);
 
         checkBoxRightClick = new QCheckBox(tabControls);
         checkBoxRightClick->setObjectName("checkBoxRightClick");
@@ -642,7 +657,9 @@ public:
         checkBoxLeftClick->setText(QCoreApplication::translate("MainWindow", "Left click with Y", nullptr));
         checkBoxGyroMouse->setText(QCoreApplication::translate("MainWindow", "Move mouse with gyro data", nullptr));
         checkBoxRequireZR->setText(QCoreApplication::translate("MainWindow", "Require ZR to be held for mouse tracking", nullptr));
+        checkBoxInvertZR->setText(QCoreApplication::translate("MainWindow", "Invert ZR (disable mouse tracking when pressed)", nullptr));
         checkBoxRightAnalogMouse->setText(QCoreApplication::translate("MainWindow", "Scroll with right analog data", nullptr));
+        checkBoxInvertScroll->setText(QCoreApplication::translate("MainWindow", "Invert scroll direction", nullptr));
         checkBoxRightClick->setText(QCoreApplication::translate("MainWindow", "Right click with X", nullptr));
         checkBoxLeftAnalogMouse->setText(QCoreApplication::translate("MainWindow", "Move mouse with left analog data", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tabControls), QCoreApplication::translate("MainWindow", "Controls", nullptr));

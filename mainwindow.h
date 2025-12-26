@@ -90,6 +90,8 @@ private slots:
 
     void on_checkBoxRequireZR_toggled(bool checked);
 
+    void on_checkBoxInvertZR_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
     StatusWidget* _status_widget;
@@ -111,6 +113,9 @@ private:
     // hold the last button state received
     int _last_button_state[3] = {0,0,0};
     bool _zr_held = false;
+    bool _mouse_toggle_active = false;
+    qint64 _zr_press_time = 0;
+    static const qint64 ZR_SHORT_PRESS_MS = 200;
     QImage _current_image = QImage();
     QVector<QRgb> _color_table;
     InputMapWidget* _l_mapper = nullptr;

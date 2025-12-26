@@ -211,8 +211,8 @@ void EventHandler::handleMouseMove(double dx, double dy){
 }
 
 void EventHandler::handleScroll(double dx, double dy) {
-    int32_t scroll_y = (int32_t)(-dy * 0.5);
-    int32_t scroll_x = (int32_t)(-dx * 0.5);
+    int32_t scroll_y = (int32_t)(-dy * 1.5);
+    int32_t scroll_x = (int32_t)(-dx * 1.5);
     if (scroll_x == 0 && scroll_y == 0) {
         return;
     }
