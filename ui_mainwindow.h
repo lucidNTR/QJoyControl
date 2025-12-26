@@ -642,7 +642,7 @@ public:
         checkBoxLeftClick->setText(QCoreApplication::translate("MainWindow", "Left click with Y", nullptr));
         checkBoxGyroMouse->setText(QCoreApplication::translate("MainWindow", "Move mouse with gyro data", nullptr));
         checkBoxRequireZR->setText(QCoreApplication::translate("MainWindow", "Require ZR to be held for mouse tracking", nullptr));
-        checkBoxRightAnalogMouse->setText(QCoreApplication::translate("MainWindow", "Move mouse with right analog data", nullptr));
+        checkBoxRightAnalogMouse->setText(QCoreApplication::translate("MainWindow", "Scroll with right analog data", nullptr));
         checkBoxRightClick->setText(QCoreApplication::translate("MainWindow", "Right click with X", nullptr));
         checkBoxLeftAnalogMouse->setText(QCoreApplication::translate("MainWindow", "Move mouse with left analog data", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tabControls), QCoreApplication::translate("MainWindow", "Controls", nullptr));

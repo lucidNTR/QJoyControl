@@ -566,6 +566,15 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
         _update_count++;
     }
 
+    // handle scroll independently of ZR requirement
+    if(ui->checkBoxRightAnalogMouse->isChecked()) {
+        double scroll_dx = scaleAnalog(analog_data[6]);
+        double scroll_dy = scaleAnalog(analog_data[7]);
+        if(!qFuzzyIsNull(scroll_dx) || !qFuzzyIsNull(scroll_dy)) {
+            _event_handler->handleScroll(scroll_dx, scroll_dy);
+        }
+    }
+
     // skip mouse tracking if ZR is required but not held
     if(ui->checkBoxRequireZR->isChecked() && !_zr_held) {
         return;
@@ -574,11 +583,6 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
     if(ui->checkBoxLeftAnalogMouse->isChecked()) {
         dx += scaleAnalog(analog_data[2]);
         dy += scaleAnalog(analog_data[3]);
-    }
-
-    if(ui->checkBoxRightAnalogMouse->isChecked()) {
-        dx += scaleAnalog(analog_data[6]);
-        dy += scaleAnalog(analog_data[7]);
     }
 
 

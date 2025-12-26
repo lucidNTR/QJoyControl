@@ -1456,6 +1456,8 @@ inputmapwidget.o: inputmapwidget.cpp inputmapwidget.h \
 		/opt/homebrew/lib/QtCore.framework/Headers/qglobal.h \
 		/opt/homebrew/lib/QtCore.framework/Headers/QMap \
 		/opt/homebrew/lib/QtCore.framework/Headers/qmap.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QSet \
+		/opt/homebrew/lib/QtCore.framework/Headers/qset.h \
 		/opt/homebrew/lib/QtCore.framework/Headers/QSettings \
 		/opt/homebrew/lib/QtCore.framework/Headers/qsettings.h \
 		/opt/homebrew/lib/QtCore.framework/Headers/QDebug \
@@ -1512,6 +1514,8 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		/opt/homebrew/lib/QtCore.framework/Headers/qglobal.h \
 		/opt/homebrew/lib/QtCore.framework/Headers/QMap \
 		/opt/homebrew/lib/QtCore.framework/Headers/qmap.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QSet \
+		/opt/homebrew/lib/QtCore.framework/Headers/qset.h \
 		/opt/homebrew/lib/QtCore.framework/Headers/QVariant \
 		/opt/homebrew/lib/QtCore.framework/Headers/qvariant.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QApplication \
@@ -1567,7 +1571,9 @@ eventhandler_macos.o: mac/eventhandler_macos.cpp eventhandler.h \
 		/opt/homebrew/lib/QtCore.framework/Headers/QtGlobal \
 		/opt/homebrew/lib/QtCore.framework/Headers/qglobal.h \
 		/opt/homebrew/lib/QtCore.framework/Headers/QMap \
-		/opt/homebrew/lib/QtCore.framework/Headers/qmap.h
+		/opt/homebrew/lib/QtCore.framework/Headers/qmap.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QSet \
+		/opt/homebrew/lib/QtCore.framework/Headers/qset.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o eventhandler_macos.o mac/eventhandler_macos.cpp
 
 powertools.o: mac/powertools.mm mac/powertools.h \

@@ -45,6 +45,7 @@ class EventHandler
 public:
     EventHandler();
     void handleMouseMove(double dx, double dy);
+    void handleScroll(double dx, double dy);
     void handleButtonPress(int button_mask);
     void handleButtonRelease(int button_mask);
     void addMapping(int from, int to);

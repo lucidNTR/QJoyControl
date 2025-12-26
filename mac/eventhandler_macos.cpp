@@ -210,6 +210,18 @@ void EventHandler::handleMouseMove(double dx, double dy){
     CFRelease(mouseEv);
 }
 
+void EventHandler::handleScroll(double dx, double dy) {
+    int32_t scroll_y = (int32_t)(-dy * 0.5);
+    int32_t scroll_x = (int32_t)(-dx * 0.5);
+    if (scroll_x == 0 && scroll_y == 0) {
+        return;
+    }
+    CGEventRef scrollEvent = CGEventCreateScrollWheelEvent(
+        nullptr, kCGScrollEventUnitPixel, 2, scroll_y, scroll_x);
+    CGEventPost(kCGHIDEventTap, scrollEvent);
+    CFRelease(scrollEvent);
+}
+
 /*!
  * \brief EventHandler::handleButtonPress
  * \param button_mask
