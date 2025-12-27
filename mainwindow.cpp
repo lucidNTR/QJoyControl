@@ -112,13 +112,16 @@ MainWindow::~MainWindow()
 {
     saveSettings();
 
-    // Disconnect HID device first while thread event loop is still running
+    // Clean up worker in its own thread context, then stop thread
     if(_thread != nullptr && _thread->isRunning()) {
-        // Use BlockingQueuedConnection to ensure disconnect completes before we quit the thread
-        QMetaObject::invokeMethod(_worker, "onDisconnectHID", Qt::BlockingQueuedConnection);
+        // Stop timers and disconnect HID in worker's thread
+        QMetaObject::invokeMethod(_worker, "cleanup", Qt::BlockingQueuedConnection);
         _thread->quit();
         _thread->wait();
     }
+    delete _worker;
+    delete _thread;
+    delete _event_handler;
     delete ui;
 }
 
@@ -134,15 +137,11 @@ void MainWindow::setupThread()
     // setup a thread to handle streaming data from the joycon
     connect(_thread,SIGNAL(started()),
             _worker,SLOT(setup()));
-    connect(_thread,SIGNAL(finished()),
-            _worker,SLOT(deleteLater()));
     connect(this,SIGNAL(destroyed()),
             _thread,SLOT(quit()));
 
     connect(_worker,SIGNAL(finished()),
             _thread,SLOT(quit()));
-    connect(_worker,SIGNAL(finished()),
-            _worker,SLOT(deleteLater()));
 
     // signals/slots for connecting and disconnecting from JoyCons
     connect(this, SIGNAL(connectHID(unsigned short, unsigned short, const wchar_t*)),
@@ -231,14 +230,17 @@ void MainWindow::hideAndClose()
     _force_close = true;
     saveSettings();
     
-    // Disconnect HID device first while thread event loop is still running
+    // Clean up worker in its own thread context, then stop thread
     if(_thread != nullptr && _thread->isRunning()) {
-        // Use BlockingQueuedConnection to ensure disconnect completes before we quit the thread
-        QMetaObject::invokeMethod(_worker, "onDisconnectHID", Qt::BlockingQueuedConnection);
+        // Stop timers and disconnect HID in worker's thread
+        QMetaObject::invokeMethod(_worker, "cleanup", Qt::BlockingQueuedConnection);
         _thread->quit();
         _thread->wait();
     }
-    hid_exit();
+    delete _worker;
+    _worker = nullptr;
+    delete _thread;
+    _thread = nullptr;
     QCoreApplication::quit();
 }
 

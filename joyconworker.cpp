@@ -677,8 +677,43 @@ void JoyConWorker::onConnectHID(unsigned short vendor_id,
 
 JoyConWorker::~JoyConWorker()
 {
+    // cleanup() should have been called from the worker thread before destruction
+    // This is just a safety fallback
+    if (handle != nullptr) {
+        hid_close(handle);
+        handle = nullptr;
+    }
+}
+
+void JoyConWorker::cleanup()
+{
+    if (_cleaned_up) return;
+    _cleaned_up = true;
+    
+    qDebug() << "cleanup: stopping timers";
+    
+    // Stop all timers first (must be done in worker thread)
+    if(_input_poll_timer) {
+        _input_poll_timer->stop();
+    }
+    if(_device_status_timer) {
+        _device_status_timer->stop();
+    }
+    if(_irCaptureTimer) {
+        _irCaptureTimer->stop();
+    }
+    
+    qDebug() << "cleanup: disconnecting HID";
+    
+    // Now disconnect HID
     onDisconnectHID();
-    emit finished();
+    
+    qDebug() << "cleanup: calling hid_exit";
+    
+    // Clean up HID library
+    hid_exit();
+    
+    qDebug() << "cleanup: done";
 }
 
 void JoyConWorker::onDeviceStatusTimerTimeout()
@@ -713,31 +748,54 @@ void JoyConWorker::setup()
 
 void JoyConWorker::onDisconnectHID()
 {
-    if(_joycon_type > 0 && handle != nullptr) {
+    if(handle == nullptr) return;
 
-        qDebug()<<"disconnecting...";
-        
-        // Stop timers first to prevent callbacks during disconnect
-        if(_input_poll_timer) _input_poll_timer->stop();
-        if(_device_status_timer) _device_status_timer->stop();
-        if(_irCaptureTimer) _irCaptureTimer->stop();
-        
-        _stream_buttons = false;
+    qDebug()<<"disconnecting...";
+    
+    // Stop timers first to prevent callbacks during disconnect
+    if(_input_poll_timer) _input_poll_timer->stop();
+    if(_device_status_timer) _device_status_timer->stop();
+    if(_irCaptureTimer) _irCaptureTimer->stop();
+    
+    _stream_buttons = false;
 
-        uint8_t buf[49];
-        int res = writePacket(buf, 49, RUMBLE_PLUS, SET_HCI_STATE, 0x00);
-        if(handle != nullptr) {
-            res = hid_read_timeout(handle, buf, sizeof(buf), 400);
-        }
+    // Save handle locally and null it first to prevent any other code from using it
+    hid_device* h = handle;
+    handle = nullptr;
+    _joycon_type = -1;
 
-        if(handle != nullptr) {
-            hid_close(handle);
-            handle = nullptr;
-        }
-        _joycon_type = -1;
+    // Try to send disconnect command, but don't crash if device already gone
+    uint8_t buf[49];
+    memset(buf, 0, sizeof(buf));
+    auto hdr = (brcm_hdr *)buf;
+    hdr->cmd = RUMBLE_PLUS;
+    hdr->timer = _timing_byte & 0xF;
+    _timing_byte++;
+    auto pkt = (brcm_cmd_01 *)(hdr + 1);
+    pkt->subcmd = SET_HCI_STATE;
+    pkt->subcmd_arg.arg1 = 0x00;
+    
+    // These may fail if device is already disconnected - that's OK
+    hid_write(h, buf, sizeof(buf));
+    hid_read_timeout(h, buf, sizeof(buf), 100);
+    
+    qDebug()<<"closing HID handle";
+    hid_close(h);
+    
+    // Give the system time to process any pending HID callbacks
+    // hid_close() schedules callbacks on the main run loop which can
+    // interfere with Qt
+    QThread::msleep(50);
+    
+    qDebug()<<"JoyCon Disconnected";
+    
+    // Only emit signals if not during cleanup (avoid cross-thread issues)
+    if (!_cleaned_up) {
+        qDebug()<<"emitting deviceConnectionChanged";
         emit deviceConnectionChanged(QString(), 0);
-        qDebug()<<"JoyCon Disconnected";
+        qDebug()<<"emitting deviceStatusMessage";
         emit deviceStatusMessage("JoyCon Disconnected");
+        qDebug()<<"signals emitted";
     }
 }
 

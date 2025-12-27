@@ -1091,12 +1091,13 @@ void HID_API_EXPORT hid_close(hid_device *dev)
 
     /* Disconnect the report callback before close. */
     if (!dev->disconnected) {
-        IOHIDDeviceRegisterInputReportCallback(
-                    dev->device_handle, dev->input_report_buf, dev->max_input_report_len,
-                    NULL, dev);
-        IOHIDDeviceRegisterRemovalCallback(dev->device_handle, NULL, dev);
-        IOHIDDeviceUnscheduleFromRunLoop(dev->device_handle, dev->run_loop, dev->run_loop_mode);
-        IOHIDDeviceScheduleWithRunLoop(dev->device_handle, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+    	IOHIDDeviceRegisterInputReportCallback(
+    				dev->device_handle, dev->input_report_buf, dev->max_input_report_len,
+    				NULL, dev);
+    	IOHIDDeviceRegisterRemovalCallback(dev->device_handle, NULL, dev);
+    	IOHIDDeviceUnscheduleFromRunLoop(dev->device_handle, dev->run_loop, dev->run_loop_mode);
+    	/* Don't schedule on main run loop - this conflicts with Qt's event loop */
+    	/* IOHIDDeviceScheduleWithRunLoop(dev->device_handle, CFRunLoopGetMain(), kCFRunLoopDefaultMode); */
     }
 
     /* Cause read_thread() to stop. */

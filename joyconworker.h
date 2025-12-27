@@ -206,6 +206,7 @@ signals:
 
 public slots:
     void setup();
+    void cleanup();
     void onConnectHID(unsigned short vendor_id,
                        unsigned short product_id,
                        const wchar_t *serial_number);
@@ -231,6 +232,7 @@ private:
     QTimer* _device_status_timer = nullptr; //<check for new input data to process
     QTimer *_irCaptureTimer = nullptr;
     bool _stream_buttons = false;
+    bool _cleaned_up = false;
     int _joycon_type = -1; //<
     hid_device* handle = nullptr;
 
