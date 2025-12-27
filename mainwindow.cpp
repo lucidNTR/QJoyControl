@@ -612,18 +612,27 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
         _update_count++;
     }
 
-    // handle scroll independently of ZR requirement
+    // handle right stick - either as scroll or as arrow keys depending on mode
     bool scroll_active = false;
     if(ui->checkBoxRightAnalogMouse->isChecked()) {
-        double scroll_dx = scaleAnalog(analog_data[6]);
-        double scroll_dy = scaleAnalog(analog_data[7]);
-        if(ui->checkBoxInvertScroll->isChecked()) {
-            scroll_dy = -scroll_dy;
-        }
-        if(!qFuzzyIsNull(scroll_dx) || !qFuzzyIsNull(scroll_dy)) {
-            scroll_active = true;
-            _last_scroll_time = QDateTime::currentMSecsSinceEpoch();
-            _event_handler->handleScroll(scroll_dx, scroll_dy);
+        double stick_x = analog_data[6];
+        double stick_y = analog_data[7];
+        
+        if(_event_handler->isRightStickArrowMode()) {
+            // arrow key mode - use raw values with threshold
+            _event_handler->handleRightStickAsArrows(stick_x, stick_y, 0.75);
+        } else {
+            // scroll mode
+            double scroll_dx = scaleAnalog(stick_x);
+            double scroll_dy = scaleAnalog(stick_y);
+            if(ui->checkBoxInvertScroll->isChecked()) {
+                scroll_dy = -scroll_dy;
+            }
+            if(!qFuzzyIsNull(scroll_dx) || !qFuzzyIsNull(scroll_dy)) {
+                scroll_active = true;
+                _last_scroll_time = QDateTime::currentMSecsSinceEpoch();
+                _event_handler->handleScroll(scroll_dx, scroll_dy);
+            }
         }
     }
 
@@ -1031,6 +1040,10 @@ void MainWindow::handleButtons(QList<int> buttons)
     if(buttons.at(1) != _last_button_state[1]) {
         testButton(_last_button_state[1], buttons[1], L_BUT_MINUS | 256);
         testButton(_last_button_state[1], buttons[1], R_BUT_PLUS | 256);
+        // R stick click toggles between scroll and arrow key mode
+        if ((buttons[1] & (R_BUT_STICK | 256)) && !(_last_button_state[1] & (R_BUT_STICK | 256))) {
+            _event_handler->toggleRightStickArrowMode();
+        }
         testButton(_last_button_state[1], buttons[1], R_BUT_STICK | 256);
         testButton(_last_button_state[1], buttons[1], L_BUT_STICK | 256);
         testButton(_last_button_state[1], buttons[1], R_BUT_HOME | 256);

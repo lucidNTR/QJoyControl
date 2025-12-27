@@ -235,6 +235,61 @@ void EventHandler::handleScroll(double dx, double dy) {
     CFRelease(scrollEvent);
 }
 
+void EventHandler::handleRightStickAsArrows(double x, double y, double threshold) {
+    bool want_up = y > threshold;
+    bool want_down = y < -threshold;
+    bool want_right = x > threshold;
+    bool want_left = x < -threshold;
+    
+    if (want_up && !_arrow_up_pressed) {
+        CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_UpArrow, true);
+        CGEventPost(kCGHIDEventTap, keyEvent);
+        CFRelease(keyEvent);
+        _arrow_up_pressed = true;
+    } else if (!want_up && _arrow_up_pressed) {
+        CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_UpArrow, false);
+        CGEventPost(kCGHIDEventTap, keyEvent);
+        CFRelease(keyEvent);
+        _arrow_up_pressed = false;
+    }
+    
+    if (want_down && !_arrow_down_pressed) {
+        CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_DownArrow, true);
+        CGEventPost(kCGHIDEventTap, keyEvent);
+        CFRelease(keyEvent);
+        _arrow_down_pressed = true;
+    } else if (!want_down && _arrow_down_pressed) {
+        CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_DownArrow, false);
+        CGEventPost(kCGHIDEventTap, keyEvent);
+        CFRelease(keyEvent);
+        _arrow_down_pressed = false;
+    }
+    
+    if (want_left && !_arrow_left_pressed) {
+        CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_LeftArrow, true);
+        CGEventPost(kCGHIDEventTap, keyEvent);
+        CFRelease(keyEvent);
+        _arrow_left_pressed = true;
+    } else if (!want_left && _arrow_left_pressed) {
+        CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_LeftArrow, false);
+        CGEventPost(kCGHIDEventTap, keyEvent);
+        CFRelease(keyEvent);
+        _arrow_left_pressed = false;
+    }
+    
+    if (want_right && !_arrow_right_pressed) {
+        CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_RightArrow, true);
+        CGEventPost(kCGHIDEventTap, keyEvent);
+        CFRelease(keyEvent);
+        _arrow_right_pressed = true;
+    } else if (!want_right && _arrow_right_pressed) {
+        CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_RightArrow, false);
+        CGEventPost(kCGHIDEventTap, keyEvent);
+        CFRelease(keyEvent);
+        _arrow_right_pressed = false;
+    }
+}
+
 /*!
  * \brief EventHandler::handleButtonPress
  * \param button_mask

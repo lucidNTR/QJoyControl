@@ -46,8 +46,12 @@ public:
     EventHandler();
     void handleMouseMove(double dx, double dy);
     void handleScroll(double dx, double dy);
+    void handleRightStickAsArrows(double x, double y, double threshold = 0.75);
     void handleButtonPress(int button_mask);
     void handleButtonRelease(int button_mask);
+    
+    void toggleRightStickArrowMode() { _right_stick_arrow_mode = !_right_stick_arrow_mode; }
+    bool isRightStickArrowMode() const { return _right_stick_arrow_mode; }
     void addMapping(int from, int to);
     void mapToMouseButton(int mask, int button);
     bool isMappedToMouse(int button_mask) const;
@@ -69,6 +73,12 @@ private:
     double _accumulated_dx = 0.0;
     double _accumulated_dy = 0.0;
     bool _threshold_reached = false;
+    
+    bool _right_stick_arrow_mode = false;
+    bool _arrow_up_pressed = false;
+    bool _arrow_down_pressed = false;
+    bool _arrow_left_pressed = false;
+    bool _arrow_right_pressed = false;
 };
 
 #endif // EVENTHANDLER_H
