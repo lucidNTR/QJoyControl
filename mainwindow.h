@@ -96,6 +96,7 @@ private slots:
     void on_checkBoxOnlyNintendo_toggled(bool checked);
     void on_checkBoxAutoConnectDevices_toggled(bool checked);
     void onAutoConnectTimer();
+    void onSilentDisconnectDetected();
 
 private:
     Ui::MainWindow *ui;

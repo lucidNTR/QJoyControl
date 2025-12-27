@@ -173,6 +173,9 @@ void MainWindow::setupThread()
     connect(_worker, SIGNAL(newBatteryData(int, int, int)),
             this, SLOT(onBatteryData(int, int, int)));
 
+    connect(_worker, SIGNAL(silentDisconnectDetected()),
+            this, SLOT(onSilentDisconnectDetected()));
+
     // move to thread and start
     _worker->moveToThread(_thread);
     _thread->start(QThread::NormalPriority);
@@ -235,6 +238,7 @@ void MainWindow::hideAndClose()
         _thread->quit();
         _thread->wait();
     }
+    hid_exit();
     QCoreApplication::quit();
 }
 
@@ -1336,5 +1340,15 @@ void MainWindow::onAutoConnectTimer()
 
     if(!_joycon_sn.isEmpty()) {
         _auto_connect_timer->stop();
+    }
+}
+
+void MainWindow::onSilentDisconnectDetected()
+{
+    qDebug() << "Silent disconnect detected, triggering reconnection...";
+    emit disconnectHID();
+    
+    if(ui->checkBoxAutoConnectDevices->isChecked()) {
+        _auto_connect_timer->start();
     }
 }

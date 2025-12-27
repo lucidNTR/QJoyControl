@@ -678,7 +678,6 @@ void JoyConWorker::onConnectHID(unsigned short vendor_id,
 JoyConWorker::~JoyConWorker()
 {
     onDisconnectHID();
-    hid_exit();
     emit finished();
 }
 
@@ -745,6 +744,8 @@ void JoyConWorker::onDisconnectHID()
 void JoyConWorker::onInputStreamingEnabled(bool enabled) {
     _stream_buttons = enabled;
     if(_stream_buttons) {
+        _last_timer_byte = 0xFF;
+        _stale_data_count = 0;
         requestJoyConInputs();
         //stream data at (up to) 60Hz (joy con will report evert 15 ms)
         _input_poll_timer->start(15);
@@ -775,8 +776,33 @@ void JoyConWorker::onInputPollTimerTimeout()
 
     int res  = hid_read_timeout(handle, buf_reply, sizeof(buf_reply), 200);
 
+    if (res <= 0) {
+        _stale_data_count++;
+        if (_stale_data_count >= STALE_DATA_THRESHOLD) {
+            qDebug() << "Silent disconnect detected: no data received";
+            _stale_data_count = 0;
+            _last_timer_byte = 0xFF;
+            emit silentDisconnectDetected();
+        }
+        return;
+    }
+
     if (res > 12) {
         if (buf_reply[0] == 0x21 || buf_reply[0] == 0x30 || buf_reply[0] == 0x31 || buf_reply[0] == 0x32 || buf_reply[0] == 0x33) {
+            uint8_t timer_byte = buf_reply[1];
+            if (_last_timer_byte != 0xFF && timer_byte == _last_timer_byte) {
+                _stale_data_count++;
+                if (_stale_data_count >= STALE_DATA_THRESHOLD) {
+                    qDebug() << "Silent disconnect detected: timer byte frozen at" << timer_byte;
+                    _stale_data_count = 0;
+                    _last_timer_byte = 0xFF;
+                    emit silentDisconnectDetected();
+                    return;
+                }
+            } else {
+                _stale_data_count = 0;
+            }
+            _last_timer_byte = timer_byte;
 
             QList<int> button_data = { (int)buf_reply[3], (int)buf_reply[4], (int)buf_reply[5] };
             // emit newButtonData(button_data);

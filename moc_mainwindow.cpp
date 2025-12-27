@@ -96,7 +96,8 @@ template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_t
         "on_checkBoxInvertZR_toggled",
         "on_checkBoxOnlyNintendo_toggled",
         "on_checkBoxAutoConnectDevices_toggled",
-        "onAutoConnectTimer"
+        "onAutoConnectTimer",
+        "onSilentDisconnectDetected"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -212,6 +213,8 @@ template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_t
         }}),
         // Slot 'onAutoConnectTimer'
         QtMocHelpers::SlotData<void()>(57, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'onSilentDisconnectDetected'
+        QtMocHelpers::SlotData<void()>(58, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -269,6 +272,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 31: _t->on_checkBoxOnlyNintendo_toggled((*reinterpret_cast< std::add_pointer_t<bool>>(_a[1]))); break;
         case 32: _t->on_checkBoxAutoConnectDevices_toggled((*reinterpret_cast< std::add_pointer_t<bool>>(_a[1]))); break;
         case 33: _t->onAutoConnectTimer(); break;
+        case 34: _t->onSilentDisconnectDetected(); break;
         default: ;
         }
     }
@@ -333,14 +337,14 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 34)
+        if (_id < 35)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 34;
+        _id -= 35;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 34)
+        if (_id < 35)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 34;
+        _id -= 35;
     }
     return _id;
 }

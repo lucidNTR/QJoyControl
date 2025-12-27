@@ -200,6 +200,8 @@ signals:
     //< digital input data, analog input data
     void newInputData(QList<int>, QList<double>);
 
+    void silentDisconnectDetected();
+
     void finished();
 
 public slots:
@@ -273,6 +275,10 @@ private:
 
     ir_image_config _ir_config;
     int send_custom_command(uint8_t *arg);
+
+    uint8_t _last_timer_byte = 0xFF;
+    int _stale_data_count = 0;
+    static const int STALE_DATA_THRESHOLD = 30;
 };
 
 

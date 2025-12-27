@@ -51,6 +51,7 @@ template <> constexpr inline auto JoyConWorker::qt_create_metaobjectdata<qt_meta
         "newInputData",
         "QList<int>",
         "QList<double>",
+        "silentDisconnectDetected",
         "finished",
         "setup",
         "onConnectHID",
@@ -104,44 +105,46 @@ template <> constexpr inline auto JoyConWorker::qt_create_metaobjectdata<qt_meta
         QtMocHelpers::SignalData<void(QList<int>, QList<double>)>(9, 2, QMC::AccessPublic, QMetaType::Void, {{
             { 0x80000000 | 10, 2 }, { 0x80000000 | 11, 2 },
         }}),
-        // Signal 'finished'
+        // Signal 'silentDisconnectDetected'
         QtMocHelpers::SignalData<void()>(12, 2, QMC::AccessPublic, QMetaType::Void),
+        // Signal 'finished'
+        QtMocHelpers::SignalData<void()>(13, 2, QMC::AccessPublic, QMetaType::Void),
         // Slot 'setup'
-        QtMocHelpers::SlotData<void()>(13, 2, QMC::AccessPublic, QMetaType::Void),
+        QtMocHelpers::SlotData<void()>(14, 2, QMC::AccessPublic, QMetaType::Void),
         // Slot 'onConnectHID'
-        QtMocHelpers::SlotData<void(unsigned short, unsigned short, const wchar_t *)>(14, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::UShort, 15 }, { QMetaType::UShort, 16 }, { 0x80000000 | 17, 18 },
+        QtMocHelpers::SlotData<void(unsigned short, unsigned short, const wchar_t *)>(15, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::UShort, 16 }, { QMetaType::UShort, 17 }, { 0x80000000 | 18, 19 },
         }}),
         // Slot 'onDisconnectHID'
-        QtMocHelpers::SlotData<void()>(19, 2, QMC::AccessPublic, QMetaType::Void),
-        // Slot 'requestDeviceInfo'
         QtMocHelpers::SlotData<void()>(20, 2, QMC::AccessPublic, QMetaType::Void),
-        // Slot 'requestTemperature'
+        // Slot 'requestDeviceInfo'
         QtMocHelpers::SlotData<void()>(21, 2, QMC::AccessPublic, QMetaType::Void),
-        // Slot 'requestBattery'
+        // Slot 'requestTemperature'
         QtMocHelpers::SlotData<void()>(22, 2, QMC::AccessPublic, QMetaType::Void),
-        // Slot 'requestJoyConInputs'
+        // Slot 'requestBattery'
         QtMocHelpers::SlotData<void()>(23, 2, QMC::AccessPublic, QMetaType::Void),
+        // Slot 'requestJoyConInputs'
+        QtMocHelpers::SlotData<void()>(24, 2, QMC::AccessPublic, QMetaType::Void),
         // Slot 'onInputStreamingEnabled'
-        QtMocHelpers::SlotData<void(bool)>(24, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::Bool, 25 },
+        QtMocHelpers::SlotData<void(bool)>(25, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Bool, 26 },
         }}),
         // Slot 'onIrConfigUpdated'
-        QtMocHelpers::SlotData<void(ir_image_config)>(26, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { 0x80000000 | 27, 28 },
+        QtMocHelpers::SlotData<void(ir_image_config)>(27, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { 0x80000000 | 28, 29 },
         }}),
         // Slot 'get_raw_ir_image'
-        QtMocHelpers::SlotData<int(unsigned char)>(29, 2, QMC::AccessPublic, QMetaType::Int, {{
-            { QMetaType::UChar, 30 },
+        QtMocHelpers::SlotData<int(unsigned char)>(30, 2, QMC::AccessPublic, QMetaType::Int, {{
+            { QMetaType::UChar, 31 },
         }}),
         // Slot 'get_raw_ir_image'
-        QtMocHelpers::SlotData<int()>(29, 2, QMC::AccessPublic | QMC::MethodCloned, QMetaType::Int),
+        QtMocHelpers::SlotData<int()>(30, 2, QMC::AccessPublic | QMC::MethodCloned, QMetaType::Int),
         // Slot 'onInputPollTimerTimeout'
-        QtMocHelpers::SlotData<void()>(31, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onDeviceStatusTimerTimeout'
         QtMocHelpers::SlotData<void()>(32, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onIrCaptureTimerTimeout'
+        // Slot 'onDeviceStatusTimerTimeout'
         QtMocHelpers::SlotData<void()>(33, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'onIrCaptureTimerTimeout'
+        QtMocHelpers::SlotData<void()>(34, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -172,23 +175,24 @@ void JoyConWorker::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         case 4: _t->newBatteryData((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<int>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<int>>(_a[3]))); break;
         case 5: _t->newCameraImage((*reinterpret_cast< std::add_pointer_t<QImage>>(_a[1]))); break;
         case 6: _t->newInputData((*reinterpret_cast< std::add_pointer_t<QList<int>>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QList<double>>>(_a[2]))); break;
-        case 7: _t->finished(); break;
-        case 8: _t->setup(); break;
-        case 9: _t->onConnectHID((*reinterpret_cast< std::add_pointer_t<ushort>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<ushort>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<const wchar_t*>>(_a[3]))); break;
-        case 10: _t->onDisconnectHID(); break;
-        case 11: _t->requestDeviceInfo(); break;
-        case 12: _t->requestTemperature(); break;
-        case 13: _t->requestBattery(); break;
-        case 14: _t->requestJoyConInputs(); break;
-        case 15: _t->onInputStreamingEnabled((*reinterpret_cast< std::add_pointer_t<bool>>(_a[1]))); break;
-        case 16: _t->onIrConfigUpdated((*reinterpret_cast< std::add_pointer_t<ir_image_config>>(_a[1]))); break;
-        case 17: { int _r = _t->get_raw_ir_image((*reinterpret_cast< std::add_pointer_t<uchar>>(_a[1])));
+        case 7: _t->silentDisconnectDetected(); break;
+        case 8: _t->finished(); break;
+        case 9: _t->setup(); break;
+        case 10: _t->onConnectHID((*reinterpret_cast< std::add_pointer_t<ushort>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<ushort>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<const wchar_t*>>(_a[3]))); break;
+        case 11: _t->onDisconnectHID(); break;
+        case 12: _t->requestDeviceInfo(); break;
+        case 13: _t->requestTemperature(); break;
+        case 14: _t->requestBattery(); break;
+        case 15: _t->requestJoyConInputs(); break;
+        case 16: _t->onInputStreamingEnabled((*reinterpret_cast< std::add_pointer_t<bool>>(_a[1]))); break;
+        case 17: _t->onIrConfigUpdated((*reinterpret_cast< std::add_pointer_t<ir_image_config>>(_a[1]))); break;
+        case 18: { int _r = _t->get_raw_ir_image((*reinterpret_cast< std::add_pointer_t<uchar>>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = std::move(_r); }  break;
-        case 18: { int _r = _t->get_raw_ir_image();
+        case 19: { int _r = _t->get_raw_ir_image();
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = std::move(_r); }  break;
-        case 19: _t->onInputPollTimerTimeout(); break;
-        case 20: _t->onDeviceStatusTimerTimeout(); break;
-        case 21: _t->onIrCaptureTimerTimeout(); break;
+        case 20: _t->onInputPollTimerTimeout(); break;
+        case 21: _t->onDeviceStatusTimerTimeout(); break;
+        case 22: _t->onIrCaptureTimerTimeout(); break;
         default: ;
         }
     }
@@ -211,7 +215,7 @@ void JoyConWorker::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
                 *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType::fromType< QList<int> >(); break;
             }
             break;
-        case 16:
+        case 17:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
             case 0:
@@ -235,7 +239,9 @@ void JoyConWorker::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
             return;
         if (QtMocHelpers::indexOfMethod<void (JoyConWorker::*)(QList<int> , QList<double> )>(_a, &JoyConWorker::newInputData, 6))
             return;
-        if (QtMocHelpers::indexOfMethod<void (JoyConWorker::*)()>(_a, &JoyConWorker::finished, 7))
+        if (QtMocHelpers::indexOfMethod<void (JoyConWorker::*)()>(_a, &JoyConWorker::silentDisconnectDetected, 7))
+            return;
+        if (QtMocHelpers::indexOfMethod<void (JoyConWorker::*)()>(_a, &JoyConWorker::finished, 8))
             return;
     }
 }
@@ -259,14 +265,14 @@ int JoyConWorker::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 22)
+        if (_id < 23)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 22;
+        _id -= 23;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 22)
+        if (_id < 23)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 22;
+        _id -= 23;
     }
     return _id;
 }
@@ -314,8 +320,14 @@ void JoyConWorker::newInputData(QList<int> _t1, QList<double> _t2)
 }
 
 // SIGNAL 7
-void JoyConWorker::finished()
+void JoyConWorker::silentDisconnectDetected()
 {
     QMetaObject::activate(this, &staticMetaObject, 7, nullptr);
+}
+
+// SIGNAL 8
+void JoyConWorker::finished()
+{
+    QMetaObject::activate(this, &staticMetaObject, 8, nullptr);
 }
 QT_WARNING_POP
