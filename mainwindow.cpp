@@ -84,6 +84,12 @@ MainWindow::MainWindow(QWidget *parent) :
     // check for and load settings
     loadSettings();
 
+    // connect click threshold slider to event handler
+    connect(ui->horizontalSliderClickThreshold, &QSlider::valueChanged, [this](int value) {
+        _event_handler->setClickThreshold(static_cast<double>(value));
+    });
+    _event_handler->setClickThreshold(ui->horizontalSliderClickThreshold->value());
+
     // the tray icon (color-inversion depends on settings)
     createTrayIcon(ui->checkBoxInvertIcon->isChecked());
 
@@ -365,6 +371,11 @@ void MainWindow::loadSettings(){
         ui->horizontalSliderGyroAccel->setValue(accel);
         ui->spinBoxGyroAccel->setValue(accel);
     }
+    if(settings.contains("click-threshold")) {
+        int threshold = settings.value("click-threshold").toInt();
+        ui->horizontalSliderClickThreshold->setValue(threshold);
+        ui->spinBoxClickThreshold->setValue(threshold);
+    }
     if(settings.contains("require-zr-for-mouse")) {
         ui->checkBoxRequireZR->setChecked(settings.value("require-zr-for-mouse").toBool());
     }
@@ -424,6 +435,7 @@ void MainWindow::saveSettings()
     settings.setValue("gyro-mouse", ui->checkBoxGyroMouse->isChecked());
     settings.setValue("gyro-dead-zone", ui->doubleSpinBoxGyroDeadzone->value());
     settings.setValue("gyro-acceleration", ui->horizontalSliderGyroAccel->value());
+    settings.setValue("click-threshold", ui->horizontalSliderClickThreshold->value());
     settings.setValue("require-zr-for-mouse", ui->checkBoxRequireZR->isChecked());
     settings.setValue("invert-zr-for-mouse", ui->checkBoxInvertZR->isChecked());
     settings.setValue("invert-scroll", ui->checkBoxInvertScroll->isChecked());
@@ -659,7 +671,7 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
             }
         }
         if(abs(analog_data[12]) > dead_zone) {
-            double accel_value = applyAcceleration(analog_data[12]);
+            double accel_value = applyAcceleration(analog_data[12]) * 2.0;
             if(_joycon_pid == JOYCON_R) {
                 dy += accel_value;
             }

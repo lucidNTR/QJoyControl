@@ -53,6 +53,7 @@ public:
     bool isMappedToMouse(int button_mask) const;
     void disableButton(int button_mask);
     void enableButton(int button_mask, int key_code);
+    void setClickThreshold(double threshold) { _click_movement_threshold = threshold; }
 
 private:
     QSet<int> _disabled_buttons;
@@ -63,6 +64,11 @@ private:
     QMap<int, unsigned short> qt_to_cg;
     bool _left_button_down = false;
     bool _right_button_down = false;
+    
+    double _click_movement_threshold = 15.0;
+    double _accumulated_dx = 0.0;
+    double _accumulated_dy = 0.0;
+    bool _threshold_reached = false;
 };
 
 #endif // EVENTHANDLER_H

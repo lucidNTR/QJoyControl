@@ -70,6 +70,9 @@ public:
     QLabel *label_gyro_accel;
     QSlider *horizontalSliderGyroAccel;
     QSpinBox *spinBoxGyroAccel;
+    QLabel *label_click_threshold;
+    QSlider *horizontalSliderClickThreshold;
+    QSpinBox *spinBoxClickThreshold;
     QGroupBox *groupBoxApplicationSettings;
     QGridLayout *gridLayout_6;
     QCheckBox *checkBoxDiagnostics;
@@ -300,6 +303,27 @@ public:
         spinBoxGyroAccel->setValue(50);
 
         gridLayout_7->addWidget(spinBoxGyroAccel, 4, 2, 1, 1);
+
+        label_click_threshold = new QLabel(groupBoxMouseSettings);
+        label_click_threshold->setObjectName("label_click_threshold");
+
+        gridLayout_7->addWidget(label_click_threshold, 5, 0, 1, 1);
+
+        horizontalSliderClickThreshold = new QSlider(groupBoxMouseSettings);
+        horizontalSliderClickThreshold->setObjectName("horizontalSliderClickThreshold");
+        horizontalSliderClickThreshold->setMinimum(0);
+        horizontalSliderClickThreshold->setMaximum(500);
+        horizontalSliderClickThreshold->setValue(15);
+        horizontalSliderClickThreshold->setOrientation(Qt::Horizontal);
+
+        gridLayout_7->addWidget(horizontalSliderClickThreshold, 5, 1, 1, 1);
+
+        spinBoxClickThreshold = new QSpinBox(groupBoxMouseSettings);
+        spinBoxClickThreshold->setObjectName("spinBoxClickThreshold");
+        spinBoxClickThreshold->setMaximum(500);
+        spinBoxClickThreshold->setValue(15);
+
+        gridLayout_7->addWidget(spinBoxClickThreshold, 5, 2, 1, 1);
 
 
         gridLayout_5->addWidget(groupBoxMouseSettings, 2, 0, 1, 2);
@@ -620,6 +644,8 @@ public:
         QObject::connect(actionQuit, &QAction::triggered, MainWindow, qOverload<>(&QMainWindow::close));
         QObject::connect(horizontalSliderGyroAccel, &QSlider::valueChanged, spinBoxGyroAccel, &QSpinBox::setValue);
         QObject::connect(spinBoxGyroAccel, &QSpinBox::valueChanged, horizontalSliderGyroAccel, &QSlider::setValue);
+        QObject::connect(horizontalSliderClickThreshold, &QSlider::valueChanged, spinBoxClickThreshold, &QSpinBox::setValue);
+        QObject::connect(spinBoxClickThreshold, &QSpinBox::valueChanged, horizontalSliderClickThreshold, &QSlider::setValue);
 
         tabWidget->setCurrentIndex(0);
 
@@ -644,6 +670,7 @@ public:
         label_3->setText(QCoreApplication::translate("MainWindow", "Gyro sensitivity", nullptr));
         label_4->setText(QCoreApplication::translate("MainWindow", "Gyro deadzone", nullptr));
         label_gyro_accel->setText(QCoreApplication::translate("MainWindow", "Gyro acceleration", nullptr));
+        label_click_threshold->setText(QCoreApplication::translate("MainWindow", "Click move threshold", nullptr));
         groupBoxApplicationSettings->setTitle(QCoreApplication::translate("MainWindow", "Application settings", nullptr));
         checkBoxDiagnostics->setText(QCoreApplication::translate("MainWindow", "Show diagnostics tab", nullptr));
         checkBoxAppNap->setText(QCoreApplication::translate("MainWindow", "Prevent App Nap", nullptr));

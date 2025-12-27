@@ -1,6 +1,7 @@
 #include "eventhandler.h"
 #include <ApplicationServices/ApplicationServices.h>
 #include <Carbon/Carbon.h>
+#include <cmath>
 
 // key code mappings
 // https://stackoverflow.com/questions/1918841/how-to-convert-ascii-character-to-cgkeycode/14529841#14529841][1]
@@ -147,6 +148,18 @@ void EventHandler::enableButton(int button_mask, int key_code)
 }
 
 void EventHandler::handleMouseMove(double dx, double dy){
+    if ((_left_button_down || _right_button_down) && !_threshold_reached) {
+        _accumulated_dx += dx;
+        _accumulated_dy += dy;
+        double accumulated_distance = sqrt(_accumulated_dx * _accumulated_dx + _accumulated_dy * _accumulated_dy);
+        if (accumulated_distance < _click_movement_threshold) {
+            return;
+        }
+        _threshold_reached = true;
+        dx = _accumulated_dx;
+        dy = _accumulated_dy;
+    }
+
     CGEventRef get = CGEventCreate(nullptr);
     CGPoint mouse = CGEventGetLocation(get);
 
@@ -245,6 +258,11 @@ void EventHandler::handleButtonPress(int button_mask){
                     kCGMouseButtonLeft);
         CGEventPost(kCGHIDEventTap, mouseEv1);
         CFRelease(mouseEv1);
+        if (!_left_button_down) {
+            _accumulated_dx = 0.0;
+            _accumulated_dy = 0.0;
+            _threshold_reached = false;
+        }
         _left_button_down = true;
     }
     else if(keyCodeMap.value(button_mask) == kCGEventRightMouseDown){
@@ -260,6 +278,11 @@ void EventHandler::handleButtonPress(int button_mask){
                     kCGMouseButtonLeft);
         CGEventPost(kCGHIDEventTap, mouseEv1);
         CFRelease(mouseEv1);
+        if (!_right_button_down) {
+            _accumulated_dx = 0.0;
+            _accumulated_dy = 0.0;
+            _threshold_reached = false;
+        }
         _right_button_down = true;
     }
     // otherwise, get the key code value for the button
@@ -291,6 +314,7 @@ void EventHandler::handleButtonRelease(int button_mask){
         CGEventPost(kCGHIDEventTap, mouseEv2);
         CFRelease(mouseEv2);
         _left_button_down = false;
+        _threshold_reached = false;
     }
     if(keyCodeMap.value(button_mask) == kCGEventRightMouseDown ){
 
@@ -306,6 +330,7 @@ void EventHandler::handleButtonRelease(int button_mask){
         CGEventPost(kCGHIDEventTap, mouseEv2);
         CFRelease(mouseEv2);
         _right_button_down = false;
+        _threshold_reached = false;
     }
     else {
         int qt_key = keyCodeMap.value(button_mask, Qt::Key_Enter);

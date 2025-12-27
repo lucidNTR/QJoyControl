@@ -274,10 +274,43 @@
               </property>
              </widget>
             </item>
-           </layout>
-           </widget>
-           </item>
-           <item row="1" column="0">
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_click_threshold">
+              <property name="text">
+               <string>Click move threshold</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QSlider" name="horizontalSliderClickThreshold">
+              <property name="minimum">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <number>500</number>
+              </property>
+              <property name="value">
+               <number>15</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="2">
+             <widget class="QSpinBox" name="spinBoxClickThreshold">
+              <property name="maximum">
+               <number>500</number>
+              </property>
+              <property name="value">
+               <number>15</number>
+              </property>
+             </widget>
+            </item>
+            </layout>
+            </widget>
+            </item>
+            <item row="1" column="0">
            <widget class="QGroupBox" name="groupBoxApplicationSettings">
           <property name="title">
            <string>Application settings</string>
@@ -881,6 +914,38 @@
      <hint type="destinationlabel">
       <x>281</x>
       <y>410</y>
+     </hint>
+    </hints>
+   </connection>
+   <connection>
+    <sender>horizontalSliderClickThreshold</sender>
+    <signal>valueChanged(int)</signal>
+    <receiver>spinBoxClickThreshold</receiver>
+    <slot>setValue(int)</slot>
+    <hints>
+     <hint type="sourcelabel">
+      <x>271</x>
+      <y>440</y>
+     </hint>
+     <hint type="destinationlabel">
+      <x>365</x>
+      <y>440</y>
+     </hint>
+    </hints>
+   </connection>
+   <connection>
+    <sender>spinBoxClickThreshold</sender>
+    <signal>valueChanged(int)</signal>
+    <receiver>horizontalSliderClickThreshold</receiver>
+    <slot>setValue(int)</slot>
+    <hints>
+     <hint type="sourcelabel">
+      <x>337</x>
+      <y>440</y>
+     </hint>
+     <hint type="destinationlabel">
+      <x>281</x>
+      <y>440</y>
      </hint>
     </hints>
    </connection>
