@@ -114,6 +114,9 @@ private:
     int _last_button_state[3] = {0,0,0};
     bool _zr_held = false;
     bool _mouse_toggle_active = false;
+    bool _any_key_pressed = false;
+    bool _mouse_disabled_for_scroll = false;
+    qint64 _last_scroll_time = 0;
     qint64 _zr_press_time = 0;
     static const qint64 ZR_SHORT_PRESS_MS = 200;
     QImage _current_image = QImage();

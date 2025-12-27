@@ -588,6 +588,7 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
     }
 
     // handle scroll independently of ZR requirement
+    bool scroll_active = false;
     if(ui->checkBoxRightAnalogMouse->isChecked()) {
         double scroll_dx = scaleAnalog(analog_data[6]);
         double scroll_dy = scaleAnalog(analog_data[7]);
@@ -595,8 +596,28 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
             scroll_dy = -scroll_dy;
         }
         if(!qFuzzyIsNull(scroll_dx) || !qFuzzyIsNull(scroll_dy)) {
+            scroll_active = true;
+            _last_scroll_time = QDateTime::currentMSecsSinceEpoch();
             _event_handler->handleScroll(scroll_dx, scroll_dy);
         }
+    }
+
+    // enable mouse disable when key pressed + scrolling
+    if(_any_key_pressed && scroll_active) {
+        _mouse_disabled_for_scroll = true;
+    }
+
+    // disable mouse disable when all keys released OR no scroll for 1s
+    if(_mouse_disabled_for_scroll) {
+        qint64 now = QDateTime::currentMSecsSinceEpoch();
+        if(!_any_key_pressed || (now - _last_scroll_time > 1000)) {
+            _mouse_disabled_for_scroll = false;
+        }
+    }
+
+    // pause mouse updates while disabled
+    if(_mouse_disabled_for_scroll) {
+        return;
     }
 
     // skip mouse tracking based on ZR state
@@ -982,6 +1003,9 @@ void MainWindow::handleButtons(QList<int> buttons)
         testButton(_last_button_state[2], buttons[2], L_BUT_ZL | 512);
         _last_button_state[2] = buttons.at(2); // store the new button state reading
     }
+
+    // track if any key is currently pressed (any non-zero button state)
+    _any_key_pressed = (buttons.at(0) != 0) || (buttons.at(1) != 0) || (buttons.at(2) != 0);
 }
 
 /*!
