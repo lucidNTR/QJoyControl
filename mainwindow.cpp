@@ -648,6 +648,16 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
                 dx -= accel_value;
             }
         }
+        // mix tilt (roll) into lateral movement
+        if(abs(analog_data[11]) > dead_zone) {
+            double accel_value = applyAcceleration(analog_data[11]);
+            if(_joycon_pid == JOYCON_R) {
+                dx += accel_value;
+            }
+            else {
+                dx -= accel_value;
+            }
+        }
         if(abs(analog_data[12]) > dead_zone) {
             double accel_value = applyAcceleration(analog_data[12]);
             if(_joycon_pid == JOYCON_R) {
