@@ -4,6 +4,8 @@
 #include <cmath>
 #include <QDateTime>
 
+static const qint64 DOUBLE_CLICK_INTERVAL_MS = 300;
+
 // key code mappings
 // https://stackoverflow.com/questions/1918841/how-to-convert-ascii-character-to-cgkeycode/14529841#14529841][1]
 
@@ -373,10 +375,19 @@ void EventHandler::handleButtonPress(int button_mask){
         int64_t x = mouse.x;
         int64_t y = mouse.y;
 
+        qint64 now = QDateTime::currentMSecsSinceEpoch();
+        if (now - _left_button_last_click < DOUBLE_CLICK_INTERVAL_MS) {
+            _left_click_count++;
+        } else {
+            _left_click_count = 1;
+        }
+        _left_button_last_click = now;
+
         CGEventRef mouseEv1 = CGEventCreateMouseEvent(
                     nullptr, kCGEventLeftMouseDown,
                     CGPointMake(x, y),
                     kCGMouseButtonLeft);
+        CGEventSetIntegerValueField(mouseEv1, kCGMouseEventClickState, _left_click_count);
         CGEventPost(kCGHIDEventTap, mouseEv1);
         CFRelease(mouseEv1);
         if (!_left_button_down) {
@@ -393,10 +404,19 @@ void EventHandler::handleButtonPress(int button_mask){
         int64_t x = mouse.x;
         int64_t y = mouse.y;
 
+        qint64 now = QDateTime::currentMSecsSinceEpoch();
+        if (now - _right_button_last_click < DOUBLE_CLICK_INTERVAL_MS) {
+            _right_click_count++;
+        } else {
+            _right_click_count = 1;
+        }
+        _right_button_last_click = now;
+
         CGEventRef mouseEv1 = CGEventCreateMouseEvent(
                     nullptr, kCGEventRightMouseDown,
                     CGPointMake(x, y),
-                    kCGMouseButtonLeft);
+                    kCGMouseButtonRight);
+        CGEventSetIntegerValueField(mouseEv1, kCGMouseEventClickState, _right_click_count);
         CGEventPost(kCGHIDEventTap, mouseEv1);
         CFRelease(mouseEv1);
         if (!_right_button_down) {
@@ -432,12 +452,13 @@ void EventHandler::handleButtonRelease(int button_mask){
                     nullptr, kCGEventLeftMouseUp,
                     CGPointMake(x, y),
                     kCGMouseButtonLeft);
+        CGEventSetIntegerValueField(mouseEv2, kCGMouseEventClickState, _left_click_count);
         CGEventPost(kCGHIDEventTap, mouseEv2);
         CFRelease(mouseEv2);
         _left_button_down = false;
         _threshold_reached = false;
     }
-    if(keyCodeMap.value(button_mask) == kCGEventRightMouseDown ){
+    else if(keyCodeMap.value(button_mask) == kCGEventRightMouseDown ){
 
         CGEventRef get = CGEventCreate(nullptr);
         CGPoint mouse = CGEventGetLocation(get);
@@ -447,7 +468,8 @@ void EventHandler::handleButtonRelease(int button_mask){
         CGEventRef mouseEv2 = CGEventCreateMouseEvent(
                     nullptr, kCGEventRightMouseUp,
                     CGPointMake(x, y),
-                    kCGMouseButtonLeft);
+                    kCGMouseButtonRight);
+        CGEventSetIntegerValueField(mouseEv2, kCGMouseEventClickState, _right_click_count);
         CGEventPost(kCGHIDEventTap, mouseEv2);
         CFRelease(mouseEv2);
         _right_button_down = false;

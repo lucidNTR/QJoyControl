@@ -41,10 +41,13 @@ void InputMapWidget::displayKeyCodeString()
 {
     Qt::Key key = (Qt::Key)_key_code;
     QString text = QKeySequence(key).toString();
-    if(_double_tap_mode) {
-        text += " (double tap)";
-    }
     ui->labelKeyCode->setText(text);
+
+    if(_double_tap_mode) {
+        ui->labelButton->setText("(double tap) " + _button_name);
+    } else {
+        ui->labelButton->setText(_button_name);
+    }
 }
 
 void InputMapWidget::on_toolButtonSet_clicked()

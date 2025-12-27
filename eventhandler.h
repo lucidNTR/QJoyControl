@@ -68,6 +68,10 @@ private:
     QMap<int, unsigned short> qt_to_cg;
     bool _left_button_down = false;
     bool _right_button_down = false;
+    qint64 _left_button_last_click = 0;
+    qint64 _right_button_last_click = 0;
+    int _left_click_count = 0;
+    int _right_click_count = 0;
     
     double _click_movement_threshold = 15.0;
     double _accumulated_dx = 0.0;
