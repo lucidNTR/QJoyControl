@@ -624,10 +624,6 @@ void JoyConWorker::onConnectHID(unsigned short vendor_id,
                                 const wchar_t *serial_number)
 {
     qDebug()<<"on connect HID";
-    if (hid_init() == -1) {
-        qDebug()<<"HID init error";
-        return;
-    }
     qDebug()<<"Opening HID device w/ VID:"<<vendor_id<< " PID:"<<product_id
            << " SN:" <<serial_number<<"SN(string):"<<QString::fromWCharArray(serial_number);
 
@@ -682,12 +678,13 @@ void JoyConWorker::onConnectHID(unsigned short vendor_id,
 JoyConWorker::~JoyConWorker()
 {
     onDisconnectHID();
+    hid_exit();
     emit finished();
 }
 
 void JoyConWorker::onDeviceStatusTimerTimeout()
 {
-    if(_joycon_type > -1) {
+    if(_joycon_type > -1 && handle != nullptr) {
         requestBattery();
         requestTemperature();
     }
@@ -697,6 +694,11 @@ void JoyConWorker::onDeviceStatusTimerTimeout()
 // create thread objects in setup
 void JoyConWorker::setup()
 {
+    // Initialize HIDAPI once in the worker thread
+    if (hid_init() == -1) {
+        qDebug() << "HID init error";
+    }
+    
     _input_poll_timer = new QTimer(this);
     _input_poll_timer->setTimerType(Qt::PreciseTimer);
     connect(_input_poll_timer, SIGNAL(timeout()),
@@ -712,27 +714,27 @@ void JoyConWorker::setup()
 
 void JoyConWorker::onDisconnectHID()
 {
-    if(_joycon_type > 0) {
+    if(_joycon_type > 0 && handle != nullptr) {
 
         qDebug()<<"disconnecting...";
-        onInputStreamingEnabled(false);
+        
+        // Stop timers first to prevent callbacks during disconnect
+        if(_input_poll_timer) _input_poll_timer->stop();
+        if(_device_status_timer) _device_status_timer->stop();
+        if(_irCaptureTimer) _irCaptureTimer->stop();
+        
+        _stream_buttons = false;
 
         uint8_t buf[49];
         int res = writePacket(buf, 49, RUMBLE_PLUS, SET_HCI_STATE, 0x00);
-        res = hid_read_timeout(handle, buf, sizeof(buf), 400);
-        /*
-        //_stream_buttons = false;
-        unsigned char custom_cmd[7];
-        memset(custom_cmd, 0, 7);
-        custom_cmd[0] = RUMBLE_PLUS; // cmd
-        custom_cmd[5] = SET_HCI_STATE; // subcmd Set HCI state
-        custom_cmd[6] = 0x00; // subcmd arg, disconnect and enter sleep mode
-        send_custom_command(custom_cmd);*/
+        if(handle != nullptr) {
+            res = hid_read_timeout(handle, buf, sizeof(buf), 400);
+        }
 
-        //this->thread()->msleep(1000);
-
-        hid_close(handle);
-        handle = nullptr;
+        if(handle != nullptr) {
+            hid_close(handle);
+            handle = nullptr;
+        }
         _joycon_type = -1;
         emit deviceConnectionChanged(QString(), 0);
         qDebug()<<"JoyCon Disconnected";
@@ -748,14 +750,16 @@ void JoyConWorker::onInputStreamingEnabled(bool enabled) {
         _input_poll_timer->start(15);
     }
     else {
-        _input_poll_timer->stop();
+        if(_input_poll_timer) _input_poll_timer->stop();
 
         // end streaming
-        uint8_t buf[49];
-        int res = writePacket(buf, 49, RUMBLE_PLUS, SET_INPUT_MODE, 0x3F);
-        res = hid_read_timeout(handle, buf, sizeof(buf), 64);
-        res - writePacket(buf, 49, RUMBLE_PLUS, ENABLE_IMU, 0x00);
-        res = hid_read_timeout(handle, buf, sizeof(buf), 64);
+        if(handle != nullptr) {
+            uint8_t buf[49];
+            int res = writePacket(buf, 49, RUMBLE_PLUS, SET_INPUT_MODE, 0x3F);
+            res = hid_read_timeout(handle, buf, sizeof(buf), 64);
+            res = writePacket(buf, 49, RUMBLE_PLUS, ENABLE_IMU, 0x00);
+            res = hid_read_timeout(handle, buf, sizeof(buf), 64);
+        }
     }
 }
 
@@ -765,6 +769,8 @@ void JoyConWorker::onInputStreamingEnabled(bool enabled) {
  */
 void JoyConWorker::onInputPollTimerTimeout()
 {
+    if(handle == nullptr) return;
+    
     uint8_t buf_reply[0x170]; // 368 byte rx buffer
 
     int res  = hid_read_timeout(handle, buf_reply, sizeof(buf_reply), 200);

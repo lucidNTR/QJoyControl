@@ -112,8 +112,10 @@ MainWindow::~MainWindow()
 {
     saveSettings();
 
-    //hid_exit(); is handled in the thread
-    if(_thread != nullptr) {
+    // Disconnect HID device first while thread event loop is still running
+    if(_thread != nullptr && _thread->isRunning()) {
+        // Use BlockingQueuedConnection to ensure disconnect completes before we quit the thread
+        QMetaObject::invokeMethod(_worker, "onDisconnectHID", Qt::BlockingQueuedConnection);
         _thread->quit();
         _thread->wait();
     }
@@ -225,8 +227,11 @@ void MainWindow::hideAndClose()
 {
     _force_close = true;
     saveSettings();
-    // let the thread complete shutdown
-    if(_thread != nullptr) {
+    
+    // Disconnect HID device first while thread event loop is still running
+    if(_thread != nullptr && _thread->isRunning()) {
+        // Use BlockingQueuedConnection to ensure disconnect completes before we quit the thread
+        QMetaObject::invokeMethod(_worker, "onDisconnectHID", Qt::BlockingQueuedConnection);
         _thread->quit();
         _thread->wait();
     }
@@ -1069,13 +1074,9 @@ void MainWindow::on_toolButtonRefresh_clicked()
     // linked list to hold enumerated HID devices
     struct hid_device_info *devs;
 
-    if (hid_init() == -1) {
-        qDebug()<<"HID init error";
-        return;
-    }
-
     // returns a pointer to a linked list of type hid_device_info
     // or NULL in the case of failure
+    // Note: hid_init/hid_exit are handled by the worker thread
     devs = ui->checkBoxOnlyNintendo->isChecked() ?
                 hid_enumerate(NINTENDO, 0x0) : hid_enumerate(0x0, 0x0);
 
@@ -1091,7 +1092,6 @@ void MainWindow::on_toolButtonRefresh_clicked()
 
     // free the linked list made by enumerate
     hid_free_enumeration(devs);
-    hid_exit();
 }
 
 /*!
