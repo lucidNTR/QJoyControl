@@ -15,9 +15,9 @@ EQ            = =
 CC            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang
 CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 DEFINES       = -DAPP_VERSION="\"0.2\"" -DAPP_PRODUCT="\"QJoyControl\"" -DAPP_COMPANY="\"UntitledSoftware\"" -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
-CFLAGS        = -pipe -O2 $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk -mmacosx-version-min=10.15 -Wall -Wextra $(DEFINES)
-CXXFLAGS      = -pipe -stdlib=libc++ -O2 -std=gnu++1z $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk -mmacosx-version-min=10.15 -Wall -Wextra $(DEFINES)
-INCPATH       = -I. -Ihidapi/hidapi -Ihidapi/mac -Imac -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/opt/homebrew/share/qt/mkspecs/macx-clang -F/opt/homebrew/lib
+CFLAGS        = -pipe -O2 $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=10.15 -Wall -Wextra $(DEFINES)
+CXXFLAGS      = -pipe -stdlib=libc++ -O2 -std=gnu++1z $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=10.15 -Wall -Wextra $(DEFINES)
+INCPATH       = -I. -Ihidapi/hidapi -Ihidapi/mac -Imac -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/opt/homebrew/share/qt/mkspecs/macx-clang -F/opt/homebrew/lib
 QMAKE         = /opt/homebrew/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -39,7 +39,7 @@ COMPRESS      = gzip -9f
 DISTNAME      = QJoyControl0.2
 DISTDIR = /Users/jan/Dev/xe/joycontrol/QJoyControl/.tmp/QJoyControl0.2
 LINK          = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
-LFLAGS        = -stdlib=libc++ -headerpad_max_install_names $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk -mmacosx-version-min=10.15 -Wl,-rpath,@executable_path/../Frameworks -Wl,-rpath,/opt/homebrew/lib
+LFLAGS        = -stdlib=libc++ -headerpad_max_install_names $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=10.15 -Wl,-rpath,@executable_path/../Frameworks -Wl,-rpath,/opt/homebrew/lib
 LIBS          = $(SUBLIBS) -F/opt/homebrew/lib -framework Foundation -framework CoreFoundation -framework IOkit -framework ApplicationServices -framework QtWidgets -framework QtGui -framework AppKit -framework ImageIO -framework Metal -framework QtCore -framework IOKit -framework DiskArbitration -framework UniformTypeIdentifiers -framework OpenGL   
 AR            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar cq
 RANLIB        = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib -s
@@ -475,7 +475,7 @@ TARGET        = QJoyControl.app/Contents/MacOS/QJoyControl
 
 ####### Custom Variables
 EXPORT_QMAKE_MAC_SDK = macosx
-EXPORT_QMAKE_MAC_SDK_VERSION = 15.1
+EXPORT_QMAKE_MAC_SDK_VERSION = 26.2
 EXPORT_QMAKE_XCODE_DEVELOPER_PATH = /Applications/Xcode.app/Contents/Developer
 EXPORT__QMAKE_STASH_ = /Users/jan/Dev/xe/joycontrol/QJoyControl/.qmake.stash
 EXPORT_VALID_ARCHS = arm64
@@ -1330,7 +1330,7 @@ compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
 moc_predefs.h: /opt/homebrew/share/qt/mkspecs/features/data/dummy.cpp
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++ -pipe -stdlib=libc++ -O2 -std=gnu++1z $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk -mmacosx-version-min=10.15 -Wall -Wextra -dM -E -o moc_predefs.h /opt/homebrew/share/qt/mkspecs/features/data/dummy.cpp
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++ -pipe -stdlib=libc++ -O2 -std=gnu++1z $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=10.15 -Wall -Wextra -dM -E -o moc_predefs.h /opt/homebrew/share/qt/mkspecs/features/data/dummy.cpp
 
 compiler_moc_header_make_all: moc_inputmappanel.cpp moc_inputmapwidget.cpp moc_mainwindow.cpp moc_joyconworker.cpp moc_statuswidget.cpp
 compiler_moc_header_clean:
@@ -1341,14 +1341,14 @@ moc_inputmappanel.cpp: inputmappanel.h \
 		inputmapwidget.h \
 		moc_predefs.h \
 		/opt/homebrew/share/qt/libexec/moc
-	/opt/homebrew/share/qt/libexec/moc $(DEFINES) --include /Users/jan/Dev/xe/joycontrol/QJoyControl/moc_predefs.h -I/opt/homebrew/share/qt/mkspecs/macx-clang -I/Users/jan/Dev/xe/joycontrol/QJoyControl -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/hidapi -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/mac -I/Users/jan/Dev/xe/joycontrol/QJoyControl/mac -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/16/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/opt/homebrew/lib inputmappanel.h -o moc_inputmappanel.cpp
+	/opt/homebrew/share/qt/libexec/moc $(DEFINES) --include /Users/jan/Dev/xe/joycontrol/QJoyControl/moc_predefs.h -I/opt/homebrew/share/qt/mkspecs/macx-clang -I/Users/jan/Dev/xe/joycontrol/QJoyControl -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/hidapi -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/mac -I/Users/jan/Dev/xe/joycontrol/QJoyControl/mac -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/opt/homebrew/lib inputmappanel.h -o moc_inputmappanel.cpp
 
 moc_inputmapwidget.cpp: inputmapwidget.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QWidget \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qwidget.h \
 		moc_predefs.h \
 		/opt/homebrew/share/qt/libexec/moc
-	/opt/homebrew/share/qt/libexec/moc $(DEFINES) --include /Users/jan/Dev/xe/joycontrol/QJoyControl/moc_predefs.h -I/opt/homebrew/share/qt/mkspecs/macx-clang -I/Users/jan/Dev/xe/joycontrol/QJoyControl -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/hidapi -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/mac -I/Users/jan/Dev/xe/joycontrol/QJoyControl/mac -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/16/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/opt/homebrew/lib inputmapwidget.h -o moc_inputmapwidget.cpp
+	/opt/homebrew/share/qt/libexec/moc $(DEFINES) --include /Users/jan/Dev/xe/joycontrol/QJoyControl/moc_predefs.h -I/opt/homebrew/share/qt/mkspecs/macx-clang -I/Users/jan/Dev/xe/joycontrol/QJoyControl -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/hidapi -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/mac -I/Users/jan/Dev/xe/joycontrol/QJoyControl/mac -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/opt/homebrew/lib inputmapwidget.h -o moc_inputmapwidget.cpp
 
 moc_mainwindow.cpp: mainwindow.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QMainWindow \
@@ -1365,7 +1365,7 @@ moc_mainwindow.cpp: mainwindow.h \
 		/opt/homebrew/lib/QtGui.framework/Headers/qimage.h \
 		moc_predefs.h \
 		/opt/homebrew/share/qt/libexec/moc
-	/opt/homebrew/share/qt/libexec/moc $(DEFINES) --include /Users/jan/Dev/xe/joycontrol/QJoyControl/moc_predefs.h -I/opt/homebrew/share/qt/mkspecs/macx-clang -I/Users/jan/Dev/xe/joycontrol/QJoyControl -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/hidapi -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/mac -I/Users/jan/Dev/xe/joycontrol/QJoyControl/mac -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/16/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/opt/homebrew/lib mainwindow.h -o moc_mainwindow.cpp
+	/opt/homebrew/share/qt/libexec/moc $(DEFINES) --include /Users/jan/Dev/xe/joycontrol/QJoyControl/moc_predefs.h -I/opt/homebrew/share/qt/mkspecs/macx-clang -I/Users/jan/Dev/xe/joycontrol/QJoyControl -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/hidapi -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/mac -I/Users/jan/Dev/xe/joycontrol/QJoyControl/mac -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/opt/homebrew/lib mainwindow.h -o moc_mainwindow.cpp
 
 moc_joyconworker.cpp: joyconworker.h \
 		/opt/homebrew/lib/QtCore.framework/Headers/QObject \
@@ -1377,14 +1377,14 @@ moc_joyconworker.cpp: joyconworker.h \
 		/opt/homebrew/lib/QtGui.framework/Headers/qimage.h \
 		moc_predefs.h \
 		/opt/homebrew/share/qt/libexec/moc
-	/opt/homebrew/share/qt/libexec/moc $(DEFINES) --include /Users/jan/Dev/xe/joycontrol/QJoyControl/moc_predefs.h -I/opt/homebrew/share/qt/mkspecs/macx-clang -I/Users/jan/Dev/xe/joycontrol/QJoyControl -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/hidapi -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/mac -I/Users/jan/Dev/xe/joycontrol/QJoyControl/mac -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/16/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/opt/homebrew/lib joyconworker.h -o moc_joyconworker.cpp
+	/opt/homebrew/share/qt/libexec/moc $(DEFINES) --include /Users/jan/Dev/xe/joycontrol/QJoyControl/moc_predefs.h -I/opt/homebrew/share/qt/mkspecs/macx-clang -I/Users/jan/Dev/xe/joycontrol/QJoyControl -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/hidapi -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/mac -I/Users/jan/Dev/xe/joycontrol/QJoyControl/mac -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/opt/homebrew/lib joyconworker.h -o moc_joyconworker.cpp
 
 moc_statuswidget.cpp: statuswidget.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QWidget \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qwidget.h \
 		moc_predefs.h \
 		/opt/homebrew/share/qt/libexec/moc
-	/opt/homebrew/share/qt/libexec/moc $(DEFINES) --include /Users/jan/Dev/xe/joycontrol/QJoyControl/moc_predefs.h -I/opt/homebrew/share/qt/mkspecs/macx-clang -I/Users/jan/Dev/xe/joycontrol/QJoyControl -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/hidapi -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/mac -I/Users/jan/Dev/xe/joycontrol/QJoyControl/mac -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/16/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/opt/homebrew/lib statuswidget.h -o moc_statuswidget.cpp
+	/opt/homebrew/share/qt/libexec/moc $(DEFINES) --include /Users/jan/Dev/xe/joycontrol/QJoyControl/moc_predefs.h -I/opt/homebrew/share/qt/mkspecs/macx-clang -I/Users/jan/Dev/xe/joycontrol/QJoyControl -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/hidapi -I/Users/jan/Dev/xe/joycontrol/QJoyControl/hidapi/mac -I/Users/jan/Dev/xe/joycontrol/QJoyControl/mac -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/opt/homebrew/lib statuswidget.h -o moc_statuswidget.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -1573,7 +1573,9 @@ eventhandler_macos.o: mac/eventhandler_macos.cpp eventhandler.h \
 		/opt/homebrew/lib/QtCore.framework/Headers/QMap \
 		/opt/homebrew/lib/QtCore.framework/Headers/qmap.h \
 		/opt/homebrew/lib/QtCore.framework/Headers/QSet \
-		/opt/homebrew/lib/QtCore.framework/Headers/qset.h
+		/opt/homebrew/lib/QtCore.framework/Headers/qset.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QDateTime \
+		/opt/homebrew/lib/QtCore.framework/Headers/qdatetime.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o eventhandler_macos.o mac/eventhandler_macos.cpp
 
 powertools.o: mac/powertools.mm mac/powertools.h \

@@ -159,8 +159,8 @@ void EventHandler::handleMouseMove(double dx, double dy){
             return;
         }
         _threshold_reached = true;
-        dx = _accumulated_dx;
-        dy = _accumulated_dy;
+        _accumulated_dx = 0;
+        _accumulated_dy = 0;
     }
 
     CGEventRef get = CGEventCreate(nullptr);

@@ -166,7 +166,7 @@
               <number>1</number>
              </property>
              <property name="maximum">
-              <number>30</number>
+              <number>40</number>
              </property>
              <property name="value">
               <number>8</number>
@@ -219,7 +219,7 @@
            <item row="1" column="2">
             <widget class="QSpinBox" name="spinBox_2">
              <property name="maximum">
-              <number>30</number>
+              <number>40</number>
              </property>
              <property name="value">
               <number>8</number>

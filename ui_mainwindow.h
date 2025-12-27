@@ -235,7 +235,7 @@ public:
         horizontalSliderGyroSensitivity = new QSlider(groupBoxMouseSettings);
         horizontalSliderGyroSensitivity->setObjectName("horizontalSliderGyroSensitivity");
         horizontalSliderGyroSensitivity->setMinimum(1);
-        horizontalSliderGyroSensitivity->setMaximum(30);
+        horizontalSliderGyroSensitivity->setMaximum(40);
         horizontalSliderGyroSensitivity->setValue(8);
         horizontalSliderGyroSensitivity->setOrientation(Qt::Horizontal);
 
@@ -269,7 +269,7 @@ public:
 
         spinBox_2 = new QSpinBox(groupBoxMouseSettings);
         spinBox_2->setObjectName("spinBox_2");
-        spinBox_2->setMaximum(30);
+        spinBox_2->setMaximum(40);
         spinBox_2->setValue(8);
 
         gridLayout_7->addWidget(spinBox_2, 1, 2, 1, 1);
