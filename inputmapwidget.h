@@ -28,6 +28,7 @@ private slots:
 
 private:
     void displayKeyCodeString();
+    void saveSettings();
 
     Ui::InputMapWidget *ui;
     EventHandler* _handler = nullptr;

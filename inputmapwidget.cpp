@@ -33,11 +33,7 @@ InputMapWidget::InputMapWidget(QString button_name, int button_mask, int key_cod
 
 InputMapWidget::~InputMapWidget()
 {
-    QSettings settings;//("werner", "QJoyControl");
-    settings.beginGroup("key-map");
-    settings.setValue(QString::number(_button_mask), _key_code);
-    settings.endGroup();
-
+    saveSettings();
     delete ui;
 }
 
@@ -64,12 +60,22 @@ void InputMapWidget::keyPressEvent(QKeyEvent *event)
         _key_code = event->key();
         _handler->addMapping(_button_mask, _key_code);
         displayKeyCodeString();
+        saveSettings();
         _grab_timer->stop();
         onGrabKeyFinished();
     }
     else {
         QWidget::keyPressEvent(event);
     }
+}
+
+void InputMapWidget::saveSettings()
+{
+    QSettings settings;
+    settings.beginGroup("key-map");
+    settings.setValue(QString::number(_button_mask), _key_code);
+    settings.endGroup();
+    settings.sync();
 }
 
 void InputMapWidget::onGrabTimerTimeout()

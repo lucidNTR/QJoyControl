@@ -67,8 +67,6 @@ public:
     QSpacerItem *horizontalSpacer_2;
     QDoubleSpinBox *doubleSpinBoxGyroDeadzone;
     QLabel *label_4;
-    QLabel *label_accel_deadzone;
-    QDoubleSpinBox *doubleSpinBoxAccelDeadzone;
     QLabel *label_gyro_accel;
     QSlider *horizontalSliderGyroAccel;
     QSpinBox *spinBoxGyroAccel;
@@ -281,19 +279,6 @@ public:
         label_4->setObjectName("label_4");
 
         gridLayout_7->addWidget(label_4, 2, 0, 1, 1);
-
-        label_accel_deadzone = new QLabel(groupBoxMouseSettings);
-        label_accel_deadzone->setObjectName("label_accel_deadzone");
-
-        gridLayout_7->addWidget(label_accel_deadzone, 3, 0, 1, 1);
-
-        doubleSpinBoxAccelDeadzone = new QDoubleSpinBox(groupBoxMouseSettings);
-        doubleSpinBoxAccelDeadzone->setObjectName("doubleSpinBoxAccelDeadzone");
-        doubleSpinBoxAccelDeadzone->setMaximum(10.000000000000000);
-        doubleSpinBoxAccelDeadzone->setSingleStep(0.100000000000000);
-        doubleSpinBoxAccelDeadzone->setValue(0.500000000000000);
-
-        gridLayout_7->addWidget(doubleSpinBoxAccelDeadzone, 3, 1, 1, 1);
 
         label_gyro_accel = new QLabel(groupBoxMouseSettings);
         label_gyro_accel->setObjectName("label_gyro_accel");
@@ -658,7 +643,6 @@ public:
         label_2->setText(QCoreApplication::translate("MainWindow", "Analog sensitivity", nullptr));
         label_3->setText(QCoreApplication::translate("MainWindow", "Gyro sensitivity", nullptr));
         label_4->setText(QCoreApplication::translate("MainWindow", "Gyro deadzone", nullptr));
-        label_accel_deadzone->setText(QCoreApplication::translate("MainWindow", "Accel deadzone", nullptr));
         label_gyro_accel->setText(QCoreApplication::translate("MainWindow", "Gyro acceleration", nullptr));
         groupBoxApplicationSettings->setTitle(QCoreApplication::translate("MainWindow", "Application settings", nullptr));
         checkBoxDiagnostics->setText(QCoreApplication::translate("MainWindow", "Show diagnostics tab", nullptr));
