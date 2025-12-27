@@ -165,6 +165,7 @@ void EventHandler::handleMouseMove(double dx, double dy){
 
     CGEventRef get = CGEventCreate(nullptr);
     CGPoint mouse = CGEventGetLocation(get);
+    CFRelease(get);
 
     CGPoint pos;
     pos.x = mouse.x + dx;
@@ -200,6 +201,14 @@ void EventHandler::handleMouseMove(double dx, double dy){
             }
         }
     }
+
+    // Use CGWarpMouseCursorPosition to move cursor at hardware level
+    // This is required for dock/menu bar autohide to respond properly
+    CGWarpMouseCursorPosition(pos);
+
+    // Create event source that mimics HID system state for better compatibility
+    CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
+
     CGEventType event_type = kCGEventMouseMoved;
     CGMouseButton button = kCGMouseButtonLeft;
     if(_left_button_down) {
@@ -210,7 +219,7 @@ void EventHandler::handleMouseMove(double dx, double dy){
         button = kCGMouseButtonRight;
     }
     CGEventRef mouseEv = CGEventCreateMouseEvent(
-                nullptr, event_type,
+                source, event_type,
                 pos, button);
 
     double final_dx = pos.x - mouse.x;
@@ -224,6 +233,9 @@ void EventHandler::handleMouseMove(double dx, double dy){
 
     CGEventPost(kCGHIDEventTap, mouseEv);
     CFRelease(mouseEv);
+    if (source) {
+        CFRelease(source);
+    }
 }
 
 void EventHandler::handleScroll(double dx, double dy) {
