@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>512</width>
+    <width>712</width>
     <height>573</height>
    </rect>
   </property>
@@ -566,17 +566,26 @@
          </widget>
         </item>
         <item row="0" column="0">
-         <widget class="InputMapPanel" name="inputMapL" native="true">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="InputMapPanel" name="inputMapR" native="true"/>
-        </item>
+          <widget class="InputMapPanel" name="inputMapL" native="true">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="InputMapPanel" name="inputMapR" native="true"/>
+         </item>
+         <item row="0" column="2">
+          <widget class="InputMapPanel" name="inputMapAlt" native="true">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
        </layout>
        <zorder>checkBoxLeftClick</zorder>
        <zorder>checkBoxGyroMouse</zorder>

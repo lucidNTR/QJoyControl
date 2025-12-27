@@ -120,6 +120,11 @@ private:
     int _last_button_state[3] = {0,0,0};
     bool _zr_held = false;
     bool _mouse_toggle_active = false;
+    bool _r_held = false;
+    bool _alt_mode_active = false;
+    bool _r_activated_alt = false;  // tracks if this R press activated alt mode
+    qint64 _r_press_time = 0;
+    static const qint64 R_HOLD_THRESHOLD_MS = 350;
     bool _any_key_pressed = false;
     bool _mouse_disabled_for_scroll = false;
     qint64 _last_scroll_time = 0;
@@ -135,6 +140,15 @@ private:
     InputMapWidget* _zr_mapper = nullptr;
     InputMapWidget* _y_mapper = nullptr;
     InputMapWidget* _x_mapper = nullptr;
+    
+    QList<InputMapWidget*> _normal_mappers;
+    QList<InputMapWidget*> _alt_mappers;
+    void setAltModeActive(bool active);
+    void handleAltStickDirections(double x, double y, double threshold);
+    bool _alt_stick_up = false;
+    bool _alt_stick_down = false;
+    bool _alt_stick_left = false;
+    bool _alt_stick_right = false;
 
     qint64 _time_last_update; // keep track of the last time the GUI was updated
 

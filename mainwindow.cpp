@@ -66,6 +66,29 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->inputMapR->addMapper(new InputMapWidget("Home", R_BUT_HOME | 256, Qt::Key_Escape, _event_handler));
     ui->inputMapR->addMapper(new InputMapWidget("R Stick Click", R_BUT_STICK | 256, Qt::Key_Enter, _event_handler));
 
+    ui->inputMapAlt->setName("Right, Alt");
+    // Match order of right controller buttons exactly
+    _alt_mappers.append(ui->inputMapAlt->addMapper(new InputMapWidget("X", R_BUT_X | 4096, Qt::Key_Delete, _event_handler)));
+    _alt_mappers.append(ui->inputMapAlt->addMapper(new InputMapWidget("Y", R_BUT_Y | 4096, Qt::Key_Backspace, _event_handler)));
+    _alt_mappers.append(ui->inputMapAlt->addMapper(new InputMapWidget("A", R_BUT_A | 4096, Qt::Key_Return, _event_handler)));
+    _alt_mappers.append(ui->inputMapAlt->addMapper(new InputMapWidget("B", R_BUT_B | 4096, Qt::Key_Space, _event_handler)));
+    // R button is not available in alt mode - add disabled placeholder
+    InputMapWidget* r_placeholder = new InputMapWidget("R", 0, Qt::Key_unknown, _event_handler);
+    r_placeholder->setEnabled(false);
+    r_placeholder->setPlaceholderText("(modifier)");
+    ui->inputMapAlt->addMapper(r_placeholder);
+    _alt_mappers.append(ui->inputMapAlt->addMapper(new InputMapWidget("ZR", R_BUT_ZR | 4096, Qt::Key_Control, _event_handler)));
+    _alt_mappers.append(ui->inputMapAlt->addMapper(new InputMapWidget("SL", R_BUT_SL | 4096, Qt::Key_F3, _event_handler)));
+    _alt_mappers.append(ui->inputMapAlt->addMapper(new InputMapWidget("SR", R_BUT_SR | 4096, Qt::Key_F4, _event_handler)));
+    _alt_mappers.append(ui->inputMapAlt->addMapper(new InputMapWidget("Plus", R_BUT_PLUS | 256 | 4096, Qt::Key_F2, _event_handler)));
+    _alt_mappers.append(ui->inputMapAlt->addMapper(new InputMapWidget("Home", R_BUT_HOME | 256 | 4096, Qt::Key_F5, _event_handler)));
+    _alt_mappers.append(ui->inputMapAlt->addMapper(new InputMapWidget("R Stick Click", R_BUT_STICK | 256 | 4096, Qt::Key_F6, _event_handler)));
+    // Virtual analog stick direction buttons (when R held, analog becomes d-pad)
+    _alt_mappers.append(ui->inputMapAlt->addMapper(new InputMapWidget("Stick Up", 8192, Qt::Key_Up, _event_handler)));
+    _alt_mappers.append(ui->inputMapAlt->addMapper(new InputMapWidget("Stick Down", 8193, Qt::Key_Down, _event_handler)));
+    _alt_mappers.append(ui->inputMapAlt->addMapper(new InputMapWidget("Stick Left", 8194, Qt::Key_Left, _event_handler)));
+    _alt_mappers.append(ui->inputMapAlt->addMapper(new InputMapWidget("Stick Right", 8195, Qt::Key_Right, _event_handler)));
+
     // add color map options
     ui->comboBoxColorMap->addItem("Grayscale", 0);
     ui->comboBoxColorMap->addItem("Heatmap", 1);
@@ -612,12 +635,15 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
         _update_count++;
     }
 
-    // handle right stick - either as scroll or as arrow keys depending on mode
+    // handle right stick - either as scroll, arrow keys, or alt mode direction buttons
     bool scroll_active = false;
-    if(ui->checkBoxRightAnalogMouse->isChecked()) {
-        double stick_x = analog_data[6];
-        double stick_y = analog_data[7];
-        
+    double stick_x = analog_data[6];
+    double stick_y = analog_data[7];
+    
+    if(_alt_mode_active) {
+        // Alt mode: right stick fires virtual direction button events
+        handleAltStickDirections(stick_x, stick_y, 0.5);
+    } else if(ui->checkBoxRightAnalogMouse->isChecked()) {
         if(_event_handler->isRightStickArrowMode()) {
             // arrow key mode - use raw values with threshold
             _event_handler->handleRightStickAsArrows(stick_x, stick_y, 0.5);
@@ -1023,23 +1049,54 @@ void MainWindow::handleButtons(QList<int> buttons)
     }
     _zr_held = zr_now;
 
+    // R button special handling: short click = action, hold = alt mode
+    bool r_now = (buttons.at(0) & R_BUT_R) != 0;
+    qint64 r_now_time = QDateTime::currentMSecsSinceEpoch();
+    
+    if(r_now && !_r_held) {
+        // R just pressed - record time and reset alt activation flag
+        _r_press_time = r_now_time;
+        _r_activated_alt = false;
+    } else if(r_now && _r_held) {
+        // R is being held - check if we should activate alt mode
+        if(!_alt_mode_active && (r_now_time - _r_press_time) >= R_HOLD_THRESHOLD_MS) {
+            setAltModeActive(true);
+            _r_activated_alt = true;
+        }
+    } else if(!r_now && _r_held) {
+        // R just released
+        if(_r_activated_alt) {
+            // Was in alt mode, deactivate it
+            setAltModeActive(false);
+        } else {
+            // Never entered alt mode - this is a short click, fire the R button action
+            _event_handler->handleButtonPress(R_BUT_R);
+            _event_handler->handleButtonRelease(R_BUT_R);
+        }
+        _r_activated_alt = false;
+    }
+    _r_held = r_now;
+
+    // Determine the alt flag based on alt mode
+    int alt_flag = _alt_mode_active ? 4096 : 0;
+
     //face buttons on R joycon
-    if(buttons.at(0) != _last_button_state[0]) {
-        testButton(_last_button_state[0], buttons[0], R_BUT_Y);
-        testButton(_last_button_state[0], buttons[0], R_BUT_X);
-        testButton(_last_button_state[0], buttons[0], R_BUT_B);
-        testButton(_last_button_state[0], buttons[0], R_BUT_A);
+    if(buttons.at(0) != _last_button_state[0] || (_alt_mode_active != ((_last_button_state[0] & 0x8000) != 0))) {
+        testButton(_last_button_state[0], buttons[0], R_BUT_Y | alt_flag);
+        testButton(_last_button_state[0], buttons[0], R_BUT_X | alt_flag);
+        testButton(_last_button_state[0], buttons[0], R_BUT_B | alt_flag);
+        testButton(_last_button_state[0], buttons[0], R_BUT_A | alt_flag);
         testButton(_last_button_state[0], buttons[0], R_BUT_SR);
         testButton(_last_button_state[0], buttons[0], R_BUT_SL);
-        testButton(_last_button_state[0], buttons[0], R_BUT_R);
-        testButton(_last_button_state[0], buttons[0], R_BUT_ZR);
+        // R button is handled specially above, don't use testButton for it
+        testButton(_last_button_state[0], buttons[0], R_BUT_ZR | alt_flag);
         _last_button_state[0] = buttons.at(0); // store the new button state reading
     }
 
     //shared button data (R and L)
     if(buttons.at(1) != _last_button_state[1]) {
-        testButton(_last_button_state[1], buttons[1], L_BUT_MINUS | 256);
-        testButton(_last_button_state[1], buttons[1], R_BUT_PLUS | 256);
+        testButton(_last_button_state[1], buttons[1], L_BUT_MINUS | 256 | alt_flag);
+        testButton(_last_button_state[1], buttons[1], R_BUT_PLUS | 256 | alt_flag);
         // R stick click toggles between scroll and arrow key mode
         if ((buttons[1] & (R_BUT_STICK | 256)) && !(_last_button_state[1] & (R_BUT_STICK | 256))) {
             _event_handler->toggleRightStickArrowMode();
@@ -1052,16 +1109,16 @@ void MainWindow::handleButtons(QList<int> buttons)
         _last_button_state[1] = buttons.at(1); // store the new button state reading
     }
 
-    // L joycon buttun data
+    // L joycon button data
     if(buttons.at(2) != _last_button_state[2]) {
-        testButton(_last_button_state[2], buttons[2], L_BUT_DOWN | 512);
-        testButton(_last_button_state[2], buttons[2], L_BUT_UP | 512);
-        testButton(_last_button_state[2], buttons[2], L_BUT_RIGHT | 512);
-        testButton(_last_button_state[2], buttons[2], L_BUT_LEFT | 512);
+        testButton(_last_button_state[2], buttons[2], L_BUT_DOWN | 512 | alt_flag);
+        testButton(_last_button_state[2], buttons[2], L_BUT_UP | 512 | alt_flag);
+        testButton(_last_button_state[2], buttons[2], L_BUT_RIGHT | 512 | alt_flag);
+        testButton(_last_button_state[2], buttons[2], L_BUT_LEFT | 512 | alt_flag);
         testButton(_last_button_state[2], buttons[2], L_BUT_SR | 512);
         testButton(_last_button_state[2], buttons[2], L_BUT_SL | 512);
-        testButton(_last_button_state[2], buttons[2], L_BUT_L | 512);
-        testButton(_last_button_state[2], buttons[2], L_BUT_ZL | 512);
+        testButton(_last_button_state[2], buttons[2], L_BUT_L | 512 | alt_flag);
+        testButton(_last_button_state[2], buttons[2], L_BUT_ZL | 512 | alt_flag);
         _last_button_state[2] = buttons.at(2); // store the new button state reading
     }
 
@@ -1073,15 +1130,18 @@ void MainWindow::handleButtons(QList<int> buttons)
  * \brief MainWindow::testButton
  * \param last_button_state an integer containing the last read button state
  * \param button_state an integer containing the newly read button state
- * \param mask an integer with a 1-bit corresponding to the button
+ * \param mask an integer with a 1-bit corresponding to the button (may include alt flag 4096)
  */
 void MainWindow::testButton(int last_button_state, int button_state, int mask)
 {
+    // Separate the base mask from the alt flag
+    int base_mask = mask & ~4096;  // Remove alt flag for comparison with button_state
+    
     // button is currently pressed
-    if(button_state & mask) {
-        _event_handler->handleButtonPress(mask);
+    if(button_state & base_mask) {
+        _event_handler->handleButtonPress(mask);  // Pass full mask including alt flag for mapping
     }
-    else if (last_button_state & mask) {
+    else if (last_button_state & base_mask) {
         _event_handler->handleButtonRelease(mask);
     }
 
@@ -1388,4 +1448,81 @@ void MainWindow::onSilentDisconnectDetected()
     if(ui->checkBoxAutoConnectDevices->isChecked()) {
         _auto_connect_timer->start();
     }
+}
+
+void MainWindow::setAltModeActive(bool active)
+{
+    if(_alt_mode_active == active) return;
+    
+    _alt_mode_active = active;
+    qDebug() << "Alt mode" << (active ? "activated" : "deactivated");
+    
+    if(active) {
+        ui->inputMapAlt->setStyleSheet("QGroupBox { background-color: rgba(100, 150, 255, 50); }");
+    } else {
+        ui->inputMapAlt->setStyleSheet("");
+        // Release any alt stick direction buttons that might be held
+        if(_alt_stick_up) {
+            _event_handler->handleButtonRelease(8192);
+            _alt_stick_up = false;
+        }
+        if(_alt_stick_down) {
+            _event_handler->handleButtonRelease(8193);
+            _alt_stick_down = false;
+        }
+        if(_alt_stick_left) {
+            _event_handler->handleButtonRelease(8194);
+            _alt_stick_left = false;
+        }
+        if(_alt_stick_right) {
+            _event_handler->handleButtonRelease(8195);
+            _alt_stick_right = false;
+        }
+    }
+}
+
+void MainWindow::handleAltStickDirections(double x, double y, double threshold)
+{
+    // Virtual button masks for alt stick directions
+    const int STICK_UP = 8192;
+    const int STICK_DOWN = 8193;
+    const int STICK_LEFT = 8194;
+    const int STICK_RIGHT = 8195;
+    
+    bool up_now = y > threshold;
+    bool down_now = y < -threshold;
+    bool left_now = x < -threshold;
+    bool right_now = x > threshold;
+    
+    // Handle up
+    if(up_now && !_alt_stick_up) {
+        _event_handler->handleButtonPress(STICK_UP);
+    } else if(!up_now && _alt_stick_up) {
+        _event_handler->handleButtonRelease(STICK_UP);
+    }
+    _alt_stick_up = up_now;
+    
+    // Handle down
+    if(down_now && !_alt_stick_down) {
+        _event_handler->handleButtonPress(STICK_DOWN);
+    } else if(!down_now && _alt_stick_down) {
+        _event_handler->handleButtonRelease(STICK_DOWN);
+    }
+    _alt_stick_down = down_now;
+    
+    // Handle left
+    if(left_now && !_alt_stick_left) {
+        _event_handler->handleButtonPress(STICK_LEFT);
+    } else if(!left_now && _alt_stick_left) {
+        _event_handler->handleButtonRelease(STICK_LEFT);
+    }
+    _alt_stick_left = left_now;
+    
+    // Handle right
+    if(right_now && !_alt_stick_right) {
+        _event_handler->handleButtonPress(STICK_RIGHT);
+    } else if(!right_now && _alt_stick_right) {
+        _event_handler->handleButtonRelease(STICK_RIGHT);
+    }
+    _alt_stick_right = right_now;
 }

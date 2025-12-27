@@ -102,6 +102,7 @@ public:
     QCheckBox *checkBoxLeftAnalogMouse;
     InputMapPanel *inputMapL;
     InputMapPanel *inputMapR;
+    InputMapPanel *inputMapAlt;
     QWidget *tabCamera;
     QGridLayout *gridLayout_3;
     QGroupBox *groupBoxExposure;
@@ -136,7 +137,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
-        MainWindow->resize(512, 573);
+        MainWindow->resize(712, 573);
         actionShow = new QAction(MainWindow);
         actionShow->setObjectName("actionShow");
         actionQuit = new QAction(MainWindow);
@@ -484,6 +485,12 @@ public:
         inputMapR->setObjectName("inputMapR");
 
         gridLayout_8->addWidget(inputMapR, 0, 1, 1, 1);
+
+        inputMapAlt = new InputMapPanel(tabControls);
+        inputMapAlt->setObjectName("inputMapAlt");
+        inputMapAlt->setFont(font);
+
+        gridLayout_8->addWidget(inputMapAlt, 0, 2, 1, 1);
 
         tabWidget->addTab(tabControls, QString());
         checkBoxLeftClick->raise();

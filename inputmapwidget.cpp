@@ -128,3 +128,9 @@ void InputMapWidget::setDoubleTapMode(bool enabled)
     _double_tap_mode = enabled;
     displayKeyCodeString();
 }
+
+void InputMapWidget::setPlaceholderText(const QString& text)
+{
+    ui->labelKeyCode->setText(text);
+    ui->toolButtonSet->setVisible(false);
+}

@@ -19,6 +19,7 @@ public:
 
     void setClickMap(int code);
     void setDoubleTapMode(bool enabled);
+    void setPlaceholderText(const QString& text);
     int keyCode() const { return _key_code; }
 protected:
     void keyPressEvent(QKeyEvent *event);

@@ -1,3 +1,7 @@
+# Intro
+This is a fork of QJoyControl that adds advanced assignments and behaviours, updates the build for macos 15 and beyond and is aimaed at providing a full features input experience for XR environments on macOS.
+
+
 # QJoyControl <img src="https://github.com/erikmwerner/QJoyControl/blob/master/img/Logo.png" align="left" width="64" height="64" title="">
 QJoyControl lets you use Nintendo Switch JoyCons as input devices on your computer. It was originally made to use a JoyCon as a PowerPoint remote, but it accumulated a few extra features along the way. Currently, QJoyControl supports:
 * JoyCons and Pro Controller
