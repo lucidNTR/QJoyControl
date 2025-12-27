@@ -979,11 +979,34 @@ void MainWindow::handleButtons(QList<int> buttons)
         if(zr_now && !_zr_held) {
             // ZR just pressed - record time
             _zr_press_time = QDateTime::currentMSecsSinceEpoch();
+            qDebug() << "ZR pressed at" << _zr_press_time;
         } else if(!zr_now && _zr_held) {
             // ZR just released - check if short press
-            qint64 press_duration = QDateTime::currentMSecsSinceEpoch() - _zr_press_time;
+            qint64 now = QDateTime::currentMSecsSinceEpoch();
+            qint64 press_duration = now - _zr_press_time;
+            qDebug() << "ZR released, press_duration=" << press_duration << "ms, last_tap=" << _zr_last_tap_time;
             if(press_duration <= ZR_SHORT_PRESS_MS) {
-                _mouse_toggle_active = !_mouse_toggle_active;
+                // check for double-tap
+                qint64 time_since_last_tap = now - _zr_last_tap_time;
+                qDebug() << "Short press detected, time_since_last_tap=" << time_since_last_tap << "ms";
+                if(_zr_last_tap_time > 0 && time_since_last_tap <= ZR_DOUBLE_TAP_MS) {
+                    // double-tap detected - undo the toggle from first tap, fire the ZR key
+                    qDebug() << "DOUBLE TAP - firing ZR key";
+                    _mouse_toggle_active = !_mouse_toggle_active;
+                    // temporarily enable ZR to fire the key (it's disabled for toggle mode)
+                    _event_handler->enableButton(R_BUT_ZR, _zr_mapper->keyCode());
+                    _event_handler->handleButtonPress(R_BUT_ZR);
+                    _event_handler->handleButtonRelease(R_BUT_ZR);
+                    _event_handler->disableButton(R_BUT_ZR);
+                    _zr_last_tap_time = 0;
+                } else {
+                    // first tap - toggle mouse
+                    qDebug() << "Single tap - toggling mouse to" << !_mouse_toggle_active;
+                    _mouse_toggle_active = !_mouse_toggle_active;
+                    _zr_last_tap_time = now;
+                }
+            } else {
+                qDebug() << "Long press, ignoring for toggle";
             }
         }
     }
@@ -1278,17 +1301,16 @@ void MainWindow::on_checkBoxRightClick_toggled(bool checked)
     }
 }
 
-// if checked, ZR is used for mouse activation - disable its keyboard mapping
+// if checked, ZR is used for mouse activation toggle - show double tap mode
 void MainWindow::on_checkBoxRequireZR_toggled(bool checked)
 {
     if(checked) {
-        _zr_mapper->setEnabled(false);
+        _zr_mapper->setDoubleTapMode(true);
         _event_handler->disableButton(R_BUT_ZR);
         ui->checkBoxInvertZR->setEnabled(true);
     }
     else {
-        _zr_mapper->setEnabled(true);
-        // re-enable with default key (will be overridden if user has a saved mapping)
+        _zr_mapper->setDoubleTapMode(false);
         _event_handler->enableButton(R_BUT_ZR, Qt::Key_S);
         ui->checkBoxInvertZR->setEnabled(false);
         ui->checkBoxInvertZR->setChecked(false);

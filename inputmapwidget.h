@@ -18,6 +18,8 @@ public:
     ~InputMapWidget();
 
     void setClickMap(int code);
+    void setDoubleTapMode(bool enabled);
+    int keyCode() const { return _key_code; }
 protected:
     void keyPressEvent(QKeyEvent *event);
 
@@ -37,7 +39,8 @@ private:
     int _button_mask = 0;
     QString _button_name;
     int _key_code;
-    bool _wait_key;;
+    bool _wait_key;
+    bool _double_tap_mode = false;
 };
 
 #endif // INPUTMAPWIDGET_H

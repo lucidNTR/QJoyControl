@@ -124,7 +124,9 @@ private:
     bool _mouse_disabled_for_scroll = false;
     qint64 _last_scroll_time = 0;
     qint64 _zr_press_time = 0;
+    qint64 _zr_last_tap_time = 0;
     static const qint64 ZR_SHORT_PRESS_MS = 200;
+    static const qint64 ZR_DOUBLE_TAP_MS = 400;
     QImage _current_image = QImage();
     QVector<QRgb> _color_table;
     InputMapWidget* _l_mapper = nullptr;

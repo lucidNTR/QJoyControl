@@ -40,7 +40,11 @@ InputMapWidget::~InputMapWidget()
 void InputMapWidget::displayKeyCodeString()
 {
     Qt::Key key = (Qt::Key)_key_code;
-    ui->labelKeyCode->setText(QKeySequence(key).toString());
+    QString text = QKeySequence(key).toString();
+    if(_double_tap_mode) {
+        text += " (double tap)";
+    }
+    ui->labelKeyCode->setText(text);
 }
 
 void InputMapWidget::on_toolButtonSet_clicked()
@@ -114,4 +118,10 @@ void InputMapWidget::setClickMap(int code)
         _handler->mapToMouseButton(_button_mask, 2);
        // _handler->addMapping(_button_mask, kCGEventLeftMouseDown);
     }
+}
+
+void InputMapWidget::setDoubleTapMode(bool enabled)
+{
+    _double_tap_mode = enabled;
+    displayKeyCodeString();
 }
