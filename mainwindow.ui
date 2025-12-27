@@ -89,21 +89,39 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QCheckBox" name="checkBoxOnlyNintendo">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Only show Nintendo devices</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
+          <widget class="QCheckBox" name="checkBoxOnlyNintendo">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Only show Nintendo devices</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QCheckBox" name="checkBoxAutoConnectDevices">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Auto connect</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+           <property name="toolTip">
+            <string>Automatically refresh and connect to all Nintendo devices</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
       </widget>
       <widget class="QWidget" name="tabSettings">
        <attribute name="title">

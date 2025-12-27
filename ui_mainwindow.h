@@ -52,6 +52,7 @@ public:
     QToolButton *toolButtonRefresh;
     QLabel *labelDeviceInfo;
     QCheckBox *checkBoxOnlyNintendo;
+    QCheckBox *checkBoxAutoConnectDevices;
     QWidget *tabSettings;
     QGridLayout *gridLayout_5;
     QGroupBox *groupBoxMouseSettings;
@@ -199,6 +200,13 @@ public:
         checkBoxOnlyNintendo->setChecked(true);
 
         gridLayout_2->addWidget(checkBoxOnlyNintendo, 1, 1, 1, 1);
+
+        checkBoxAutoConnectDevices = new QCheckBox(tabConnect);
+        checkBoxAutoConnectDevices->setObjectName("checkBoxAutoConnectDevices");
+        checkBoxAutoConnectDevices->setFont(font);
+        checkBoxAutoConnectDevices->setChecked(true);
+
+        gridLayout_2->addWidget(checkBoxAutoConnectDevices, 5, 1, 1, 1);
 
         tabWidget->addTab(tabConnect, QString());
         tabSettings = new QWidget();
@@ -663,6 +671,10 @@ public:
         toolButtonRefresh->setText(QCoreApplication::translate("MainWindow", "Refresh", nullptr));
         labelDeviceInfo->setText(QCoreApplication::translate("MainWindow", "No device connected", nullptr));
         checkBoxOnlyNintendo->setText(QCoreApplication::translate("MainWindow", "Only show Nintendo devices", nullptr));
+        checkBoxAutoConnectDevices->setText(QCoreApplication::translate("MainWindow", "Auto connect", nullptr));
+#if QT_CONFIG(tooltip)
+        checkBoxAutoConnectDevices->setToolTip(QCoreApplication::translate("MainWindow", "Automatically refresh and connect to all Nintendo devices", nullptr));
+#endif // QT_CONFIG(tooltip)
         tabWidget->setTabText(tabWidget->indexOf(tabConnect), QCoreApplication::translate("MainWindow", "Connect", nullptr));
         groupBoxMouseSettings->setTitle(QCoreApplication::translate("MainWindow", "Mouse pointer settings", nullptr));
         checkBoxInvertMouse->setText(QCoreApplication::translate("MainWindow", "Invert Y-Axis", nullptr));

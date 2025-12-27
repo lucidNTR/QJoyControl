@@ -78,6 +78,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     on_toolButtonRefresh_clicked();
 
+    // setup auto-connect timer
+    _auto_connect_timer = new QTimer(this);
+    _auto_connect_timer->setInterval(3000);
+    connect(_auto_connect_timer, &QTimer::timeout, this, &MainWindow::onAutoConnectTimer);
+
     // put all HID communication stuff in its own thread
     setupThread();
 
@@ -92,6 +97,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // the tray icon (color-inversion depends on settings)
     createTrayIcon(ui->checkBoxInvertIcon->isChecked());
+
+    // start auto-connect timer if enabled and only nintendo is checked
+    on_checkBoxOnlyNintendo_toggled(ui->checkBoxOnlyNintendo->isChecked());
+    if(ui->checkBoxAutoConnectDevices->isChecked() && ui->checkBoxOnlyNintendo->isChecked()) {
+        _auto_connect_timer->start();
+    }
 
     this->thread()->setPriority(QThread::TimeCriticalPriority);
     _time_last_update = QDateTime::currentMSecsSinceEpoch();
@@ -464,6 +475,9 @@ void MainWindow::onDeviceConnectionChanged(QString sn, const unsigned short pid)
     else {
         ui->toolButtonConnect->setEnabled(true);
         ui->toolButtonDisconnect->setEnabled(false);
+        if(ui->checkBoxAutoConnectDevices->isChecked() && ui->checkBoxOnlyNintendo->isChecked()) {
+            _auto_connect_timer->start();
+        }
     }
 }
 
@@ -1280,4 +1294,47 @@ void MainWindow::on_checkBoxRequireZR_toggled(bool checked)
 void MainWindow::on_checkBoxInvertZR_toggled(bool checked)
 {
     Q_UNUSED(checked);
+}
+
+void MainWindow::on_checkBoxOnlyNintendo_toggled(bool checked)
+{
+    ui->checkBoxAutoConnectDevices->setEnabled(checked);
+    if(!checked) {
+        ui->checkBoxAutoConnectDevices->setChecked(false);
+        _auto_connect_timer->stop();
+    }
+    on_toolButtonRefresh_clicked();
+}
+
+void MainWindow::on_checkBoxAutoConnectDevices_toggled(bool checked)
+{
+    if(checked && ui->checkBoxOnlyNintendo->isChecked()) {
+        _auto_connect_timer->start();
+        onAutoConnectTimer();
+    } else {
+        _auto_connect_timer->stop();
+    }
+}
+
+void MainWindow::onAutoConnectTimer()
+{
+    if(_joycon_sn.isEmpty() && ui->listWidgetDevices->count() == 0) {
+        on_toolButtonRefresh_clicked();
+    }
+
+    if(_joycon_sn.isEmpty() && ui->listWidgetDevices->count() > 0) {
+        for(int i = 0; i < ui->listWidgetDevices->count(); ++i) {
+            QListWidgetItem* item = ui->listWidgetDevices->item(i);
+            unsigned short vendor_id = item->data(Qt::UserRole + 1).toUInt();
+            if(vendor_id == NINTENDO) {
+                ui->listWidgetDevices->setCurrentRow(i);
+                on_toolButtonConnect_clicked();
+                break;
+            }
+        }
+    }
+
+    if(!_joycon_sn.isEmpty()) {
+        _auto_connect_timer->stop();
+    }
 }

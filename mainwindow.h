@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QSystemTrayIcon>
+#include <QTimer>
 
 #include "joyconworker.h"
 
@@ -92,6 +93,10 @@ private slots:
 
     void on_checkBoxInvertZR_toggled(bool checked);
 
+    void on_checkBoxOnlyNintendo_toggled(bool checked);
+    void on_checkBoxAutoConnectDevices_toggled(bool checked);
+    void onAutoConnectTimer();
+
 private:
     Ui::MainWindow *ui;
     StatusWidget* _status_widget;
@@ -130,6 +135,7 @@ private:
 
     qint64 _time_last_update; // keep track of the last time the GUI was updated
 
+    QTimer* _auto_connect_timer = nullptr;
 
     void loadSettings();
     void setupThread();
