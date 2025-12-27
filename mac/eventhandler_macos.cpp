@@ -2,6 +2,7 @@
 #include <ApplicationServices/ApplicationServices.h>
 #include <Carbon/Carbon.h>
 #include <cmath>
+#include <QDateTime>
 
 // key code mappings
 // https://stackoverflow.com/questions/1918841/how-to-convert-ascii-character-to-cgkeycode/14529841#14529841][1]
@@ -240,17 +241,56 @@ void EventHandler::handleRightStickAsArrows(double x, double y, double threshold
     bool want_down = y < -threshold;
     bool want_right = x > threshold;
     bool want_left = x < -threshold;
+    qint64 now = QDateTime::currentMSecsSinceEpoch();
+    
+    // Track fast zone (stick pushed past 0.85)
+    bool inFastZone = (fabs(x) > 0.85) || (fabs(y) > 0.85);
+    if (inFastZone && !_in_fast_zone) {
+        // Just entered fast zone, record time
+        _fast_mode_start_time = now;
+        _in_fast_zone = true;
+    } else if (!inFastZone && _in_fast_zone) {
+        // Left fast zone, reset timer
+        _in_fast_zone = false;
+        _fast_mode_start_time = 0;
+    }
+    
+    // Only use fast repeat if currently in fast zone AND been there for 400ms
+    bool useFastRepeat = inFastZone && _in_fast_zone && (now - _fast_mode_start_time >= FAST_MODE_DELAY_MS);
+    qint64 repeatInterval = useFastRepeat ? ARROW_FAST_REPEAT_INTERVAL_MS : ARROW_REPEAT_INTERVAL_MS;
+    
+    // Helper lambda to check if we should repeat
+    // Returns true if enough time has passed since last repeat
+    auto shouldRepeat = [now, repeatInterval](qint64 lastRepeat, bool isFirstRepeat) {
+        qint64 elapsed = now - lastRepeat;
+        if (isFirstRepeat) {
+            // First repeat after initial delay
+            return elapsed >= ARROW_REPEAT_DELAY_MS;
+        } else {
+            // Subsequent repeats at interval
+            return elapsed >= repeatInterval;
+        }
+    };
     
     if (want_up && !_arrow_up_pressed) {
         CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_UpArrow, true);
         CGEventPost(kCGHIDEventTap, keyEvent);
         CFRelease(keyEvent);
         _arrow_up_pressed = true;
+        _arrow_up_repeating = false;
+        _arrow_up_last_repeat = now;
+    } else if (want_up && _arrow_up_pressed && shouldRepeat(_arrow_up_last_repeat, !_arrow_up_repeating)) {
+        CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_UpArrow, true);
+        CGEventPost(kCGHIDEventTap, keyEvent);
+        CFRelease(keyEvent);
+        _arrow_up_repeating = true;
+        _arrow_up_last_repeat = now;
     } else if (!want_up && _arrow_up_pressed) {
         CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_UpArrow, false);
         CGEventPost(kCGHIDEventTap, keyEvent);
         CFRelease(keyEvent);
         _arrow_up_pressed = false;
+        _arrow_up_repeating = false;
     }
     
     if (want_down && !_arrow_down_pressed) {
@@ -258,11 +298,20 @@ void EventHandler::handleRightStickAsArrows(double x, double y, double threshold
         CGEventPost(kCGHIDEventTap, keyEvent);
         CFRelease(keyEvent);
         _arrow_down_pressed = true;
+        _arrow_down_repeating = false;
+        _arrow_down_last_repeat = now;
+    } else if (want_down && _arrow_down_pressed && shouldRepeat(_arrow_down_last_repeat, !_arrow_down_repeating)) {
+        CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_DownArrow, true);
+        CGEventPost(kCGHIDEventTap, keyEvent);
+        CFRelease(keyEvent);
+        _arrow_down_repeating = true;
+        _arrow_down_last_repeat = now;
     } else if (!want_down && _arrow_down_pressed) {
         CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_DownArrow, false);
         CGEventPost(kCGHIDEventTap, keyEvent);
         CFRelease(keyEvent);
         _arrow_down_pressed = false;
+        _arrow_down_repeating = false;
     }
     
     if (want_left && !_arrow_left_pressed) {
@@ -270,11 +319,20 @@ void EventHandler::handleRightStickAsArrows(double x, double y, double threshold
         CGEventPost(kCGHIDEventTap, keyEvent);
         CFRelease(keyEvent);
         _arrow_left_pressed = true;
+        _arrow_left_repeating = false;
+        _arrow_left_last_repeat = now;
+    } else if (want_left && _arrow_left_pressed && shouldRepeat(_arrow_left_last_repeat, !_arrow_left_repeating)) {
+        CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_LeftArrow, true);
+        CGEventPost(kCGHIDEventTap, keyEvent);
+        CFRelease(keyEvent);
+        _arrow_left_repeating = true;
+        _arrow_left_last_repeat = now;
     } else if (!want_left && _arrow_left_pressed) {
         CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_LeftArrow, false);
         CGEventPost(kCGHIDEventTap, keyEvent);
         CFRelease(keyEvent);
         _arrow_left_pressed = false;
+        _arrow_left_repeating = false;
     }
     
     if (want_right && !_arrow_right_pressed) {
@@ -282,6 +340,14 @@ void EventHandler::handleRightStickAsArrows(double x, double y, double threshold
         CGEventPost(kCGHIDEventTap, keyEvent);
         CFRelease(keyEvent);
         _arrow_right_pressed = true;
+        _arrow_right_repeating = false;
+        _arrow_right_last_repeat = now;
+    } else if (want_right && _arrow_right_pressed && shouldRepeat(_arrow_right_last_repeat, !_arrow_right_repeating)) {
+        CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_RightArrow, true);
+        CGEventPost(kCGHIDEventTap, keyEvent);
+        CFRelease(keyEvent);
+        _arrow_right_repeating = true;
+        _arrow_right_last_repeat = now;
     } else if (!want_right && _arrow_right_pressed) {
         CGEventRef keyEvent = CGEventCreateKeyboardEvent(nullptr, kVK_RightArrow, false);
         CGEventPost(kCGHIDEventTap, keyEvent);

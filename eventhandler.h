@@ -79,6 +79,21 @@ private:
     bool _arrow_down_pressed = false;
     bool _arrow_left_pressed = false;
     bool _arrow_right_pressed = false;
+    bool _arrow_up_repeating = false;
+    bool _arrow_down_repeating = false;
+    bool _arrow_left_repeating = false;
+    bool _arrow_right_repeating = false;
+    
+    qint64 _arrow_up_last_repeat = 0;
+    qint64 _arrow_down_last_repeat = 0;
+    qint64 _arrow_left_last_repeat = 0;
+    qint64 _arrow_right_last_repeat = 0;
+    qint64 _fast_mode_start_time = 0;
+    bool _in_fast_zone = false;
+    static const qint64 ARROW_REPEAT_DELAY_MS = 400;
+    static const qint64 ARROW_REPEAT_INTERVAL_MS = 50;
+    static const qint64 ARROW_FAST_REPEAT_INTERVAL_MS = 34;
+    static const qint64 FAST_MODE_DELAY_MS = 700;
 };
 
 #endif // EVENTHANDLER_H

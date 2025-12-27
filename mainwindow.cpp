@@ -620,7 +620,7 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
         
         if(_event_handler->isRightStickArrowMode()) {
             // arrow key mode - use raw values with threshold
-            _event_handler->handleRightStickAsArrows(stick_x, stick_y, 0.75);
+            _event_handler->handleRightStickAsArrows(stick_x, stick_y, 0.5);
         } else {
             // scroll mode
             double scroll_dx = scaleAnalog(stick_x);
