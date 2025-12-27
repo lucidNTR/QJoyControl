@@ -60,7 +60,7 @@ macx {
     ICON = img/Logo.icns
 
     # use custom plist to hide dock icon
-    #QMAKE_INFO_PLIST = Info.plist
+    QMAKE_INFO_PLIST = Info.plist
 
     # for homebrew hidapi installation
     #HIDAPI_PATH = /usr/local/Cellar/hidapi/0.9.0

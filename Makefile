@@ -1257,7 +1257,7 @@ QJoyControl.app/Contents/PkgInfo:
 QJoyControl.app/Contents/Info.plist: 
 	@test -d QJoyControl.app/Contents || mkdir -p QJoyControl.app/Contents
 	@$(DEL_FILE) QJoyControl.app/Contents/Info.plist
-	@set -o pipefail && plutil -convert xml1 -o - /opt/homebrew/share/qt/mkspecs/macx-clang/Info.plist.app | sed -e "s,@SHORT_VERSION@,0.2,g" -e "s,\$${QMAKE_SHORT_VERSION},0.2,g" -e "s,@FULL_VERSION@,0.2.0,g" -e "s,\$${QMAKE_FULL_VERSION},0.2.0,g" -e "s,@TYPEINFO@,????,g" -e "s,\$${QMAKE_PKGINFO_TYPEINFO},????,g" -e "s,@BUNDLEIDENTIFIER@,cloudless.one.QJoyControl,g" -e "s,\$${PRODUCT_BUNDLE_IDENTIFIER},cloudless.one.QJoyControl,g" -e "s,\$${MACOSX_DEPLOYMENT_TARGET},10.15,g" -e "s,\$${IPHONEOS_DEPLOYMENT_TARGET},,g" -e "s,\$${TVOS_DEPLOYMENT_TARGET},,g" -e "s,\$${WATCHOS_DEPLOYMENT_TARGET},,g" -e "s,\$${IOS_LAUNCH_SCREEN},LaunchScreen,g" -e "s,@ICON@,Logo.icns,g" -e "s,\$${ASSETCATALOG_COMPILER_APPICON_NAME},Logo.icns,g" -e "s,@EXECUTABLE@,QJoyControl,g" -e "s,@LIBRARY@,QJoyControl,g" -e "s,\$${EXECUTABLE_NAME},QJoyControl,g" -e "s,@TYPEINFO@,????,g" -e "s,\$${QMAKE_PKGINFO_TYPEINFO},????,g" >QJoyControl.app/Contents/Info.plist
+	@set -o pipefail && plutil -convert xml1 -o - Info.plist | sed -e "s,@SHORT_VERSION@,0.2,g" -e "s,\$${QMAKE_SHORT_VERSION},0.2,g" -e "s,@FULL_VERSION@,0.2.0,g" -e "s,\$${QMAKE_FULL_VERSION},0.2.0,g" -e "s,@TYPEINFO@,????,g" -e "s,\$${QMAKE_PKGINFO_TYPEINFO},????,g" -e "s,@BUNDLEIDENTIFIER@,cloudless.one.QJoyControl,g" -e "s,\$${PRODUCT_BUNDLE_IDENTIFIER},cloudless.one.QJoyControl,g" -e "s,\$${MACOSX_DEPLOYMENT_TARGET},10.15,g" -e "s,\$${IPHONEOS_DEPLOYMENT_TARGET},,g" -e "s,\$${TVOS_DEPLOYMENT_TARGET},,g" -e "s,\$${WATCHOS_DEPLOYMENT_TARGET},,g" -e "s,\$${IOS_LAUNCH_SCREEN},LaunchScreen,g" -e "s,@ICON@,Logo.icns,g" -e "s,\$${ASSETCATALOG_COMPILER_APPICON_NAME},Logo.icns,g" -e "s,@EXECUTABLE@,QJoyControl,g" -e "s,@LIBRARY@,QJoyControl,g" -e "s,\$${EXECUTABLE_NAME},QJoyControl,g" -e "s,@TYPEINFO@,????,g" -e "s,\$${QMAKE_PKGINFO_TYPEINFO},????,g" >QJoyControl.app/Contents/Info.plist
 QJoyControl.app/Contents/Resources/Logo.icns: img/Logo.icns
 	@test -d QJoyControl.app/Contents/Resources/ || mkdir -p QJoyControl.app/Contents/Resources/
 	@$(DEL_FILE) QJoyControl.app/Contents/Resources/Logo.icns
@@ -1355,11 +1355,11 @@ moc_mainwindow.cpp: mainwindow.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qmainwindow.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QSystemTrayIcon \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qsystemtrayicon.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QTimer \
+		/opt/homebrew/lib/QtCore.framework/Headers/qtimer.h \
 		joyconworker.h \
 		/opt/homebrew/lib/QtCore.framework/Headers/QObject \
 		/opt/homebrew/lib/QtCore.framework/Headers/qobject.h \
-		/opt/homebrew/lib/QtCore.framework/Headers/QTimer \
-		/opt/homebrew/lib/QtCore.framework/Headers/qtimer.h \
 		hidapi/hidapi/hidapi.h \
 		/opt/homebrew/lib/QtGui.framework/Headers/QImage \
 		/opt/homebrew/lib/QtGui.framework/Headers/qimage.h \
@@ -1469,11 +1469,11 @@ main.o: main.cpp mainwindow.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qmainwindow.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QSystemTrayIcon \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qsystemtrayicon.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QTimer \
+		/opt/homebrew/lib/QtCore.framework/Headers/qtimer.h \
 		joyconworker.h \
 		/opt/homebrew/lib/QtCore.framework/Headers/QObject \
 		/opt/homebrew/lib/QtCore.framework/Headers/qobject.h \
-		/opt/homebrew/lib/QtCore.framework/Headers/QTimer \
-		/opt/homebrew/lib/QtCore.framework/Headers/qtimer.h \
 		hidapi/hidapi/hidapi.h \
 		/opt/homebrew/lib/QtGui.framework/Headers/QImage \
 		/opt/homebrew/lib/QtGui.framework/Headers/qimage.h \
@@ -1495,11 +1495,11 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qmainwindow.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QSystemTrayIcon \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qsystemtrayicon.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QTimer \
+		/opt/homebrew/lib/QtCore.framework/Headers/qtimer.h \
 		joyconworker.h \
 		/opt/homebrew/lib/QtCore.framework/Headers/QObject \
 		/opt/homebrew/lib/QtCore.framework/Headers/qobject.h \
-		/opt/homebrew/lib/QtCore.framework/Headers/QTimer \
-		/opt/homebrew/lib/QtCore.framework/Headers/qtimer.h \
 		hidapi/hidapi/hidapi.h \
 		/opt/homebrew/lib/QtGui.framework/Headers/QImage \
 		/opt/homebrew/lib/QtGui.framework/Headers/qimage.h \
