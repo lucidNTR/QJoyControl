@@ -592,7 +592,6 @@ void MainWindow::onNewInputData(QList<int> button_data, QList<double> analog_dat
         double scroll_dx = scaleAnalog(analog_data[6]);
         double scroll_dy = scaleAnalog(analog_data[7]);
         if(ui->checkBoxInvertScroll->isChecked()) {
-            scroll_dx = -scroll_dx;
             scroll_dy = -scroll_dy;
         }
         if(!qFuzzyIsNull(scroll_dx) || !qFuzzyIsNull(scroll_dy)) {
